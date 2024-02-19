@@ -9,7 +9,7 @@ public class PlayChess {
 		// TODO Auto-generated method stub
 		Scanner sc = new Scanner(System.in);
 		Chess.start();
-		
+		Boolean newGame = false;
 		String line = sc.nextLine();
 		while (!line.equals("quit")) {
 			if (line.equals("reset")) {
@@ -24,6 +24,10 @@ public class PlayChess {
 			// print result message
 			if (res.message != null) {
 				System.out.println("\n"+res.message);
+				if (res.message == ReturnPlay.Message.RESIGN_BLACK_WINS || res.message == ReturnPlay.Message.RESIGN_WHITE_WINS) {
+					newGame = true;
+					System.out.println("\n\nresign\n");
+				}
 			}
 			System.out.println();
 			
@@ -32,7 +36,8 @@ public class PlayChess {
 			System.out.println();
 			
 			// next line
-			line = sc.nextLine();
+			line = (!newGame) ? sc.nextLine() : "reset";
+			newGame = false;
 		}
 		
 		sc.close();
