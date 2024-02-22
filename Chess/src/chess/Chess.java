@@ -1,6 +1,6 @@
+//Contributers: Akshaj Kammari, Gabe Nydick
 package chess;
 
-//Contributers: Akshaj Kammari, Gabe Nydick
 import java.util.ArrayList;
 
 class ReturnPiece {
@@ -110,12 +110,11 @@ public class Chess {
 						// Example: result.piecesOnBoard = processDrawOffer(sourceSquare,
 						// destinationSquare);
 						result.message = ReturnPlay.Message.DRAW;
-					}
+					} 
 				}
 			} else if (moveParts.length == 1 && moveParts[0].equals("resign")) {
 				// Resignation
-				result.message = (currentPlayer == Player.white) ? ReturnPlay.Message.RESIGN_BLACK_WINS
-						: ReturnPlay.Message.RESIGN_WHITE_WINS;
+				result.message = (currentPlayer == Player.white) ? ReturnPlay.Message.RESIGN_BLACK_WINS : ReturnPlay.Message.RESIGN_WHITE_WINS;
 			}
 		} else {
 			// Illegal move
@@ -162,101 +161,102 @@ public class Chess {
 		ReturnPiece g = new ReturnPiece();
 		ReturnPiece h = new ReturnPiece();
 
-		// WR 1
+		//WR 1
 		a.pieceType = ReturnPiece.PieceType.WR;
 		a.pieceFile = ReturnPiece.PieceFile.a;
 		a.pieceRank = 1;
 		initialPieces.add(a);
-		// WR 2
+		//WR 2
 		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.WR;
 		a.pieceFile = ReturnPiece.PieceFile.h;
 		a.pieceRank = 1;
 		initialPieces.add(a);
-		// BR 1
+		//BR 1
 		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.BR;
 		a.pieceFile = ReturnPiece.PieceFile.a;
 		a.pieceRank = 8;
 		initialPieces.add(a);
-		// BR 2
+		//BR 2
 		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.BR;
 		a.pieceFile = ReturnPiece.PieceFile.h;
 		a.pieceRank = 8;
 		initialPieces.add(a);
-		// WN 1
+		//WN 1
 		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.WN;
 		a.pieceFile = ReturnPiece.PieceFile.b;
 		a.pieceRank = 1;
 		initialPieces.add(a);
-		// WN 2
+		//WN 2
 		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.WN;
 		a.pieceFile = ReturnPiece.PieceFile.g;
 		a.pieceRank = 1;
 		initialPieces.add(a);
-		// BN 1
+		//BN 1
 		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.BN;
 		a.pieceFile = ReturnPiece.PieceFile.b;
 		a.pieceRank = 8;
 		initialPieces.add(a);
-		// BN 2
+		//BN 2
 		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.BN;
 		a.pieceFile = ReturnPiece.PieceFile.g;
 		a.pieceRank = 8;
 		initialPieces.add(a);
-		// WB 1
+		//WB 1
 		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.WB;
 		a.pieceFile = ReturnPiece.PieceFile.c;
 		a.pieceRank = 1;
 		initialPieces.add(a);
-		// WB 2
+		//WB 2
 		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.WB;
 		a.pieceFile = ReturnPiece.PieceFile.f;
 		a.pieceRank = 1;
 		initialPieces.add(a);
-		// BB 1
+		//BB 1
 		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.BB;
 		a.pieceFile = ReturnPiece.PieceFile.c;
 		a.pieceRank = 8;
 		initialPieces.add(a);
-		// BB 2
+		//BB 2
 		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.BB;
 		a.pieceFile = ReturnPiece.PieceFile.f;
 		a.pieceRank = 8;
 		initialPieces.add(a);
-		// WQ 1
+		//WQ 1
 		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.WQ;
 		a.pieceFile = ReturnPiece.PieceFile.d;
 		a.pieceRank = 1;
 		initialPieces.add(a);
-		// BQ 2
+		//BQ 2
 		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.BQ;
 		a.pieceFile = ReturnPiece.PieceFile.d;
 		a.pieceRank = 8;
 		initialPieces.add(a);
-		// WK 1
+		//WK 1
 		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.WK;
 		a.pieceFile = ReturnPiece.PieceFile.e;
 		a.pieceRank = 1;
 		initialPieces.add(a);
-		// BK 2
+		//BK 2
 		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.BK;
 		a.pieceFile = ReturnPiece.PieceFile.e;
 		a.pieceRank = 8;
 		initialPieces.add(a);
+
 
 		/*
 		 * setup pawns on rows 2, 7
@@ -267,7 +267,7 @@ public class Chess {
 			a.pieceFile = file;
 			a.pieceRank = 2;
 			initialPieces.add(a);
-			// System.out.println(file);
+			//System.out.println(file);
 		}
 		for (ReturnPiece.PieceFile file : ReturnPiece.PieceFile.values()) { // adds black pawns to arraylist
 			a = new ReturnPiece();
@@ -275,7 +275,7 @@ public class Chess {
 			a.pieceFile = file;
 			a.pieceRank = 7;
 			initialPieces.add(a);
-			// System.out.println(file);
+			//System.out.println(file);
 		}
 
 		return initialPieces;
