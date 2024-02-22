@@ -4,6 +4,8 @@ import chess.Chess.Player;
 import chess.ReturnPiece.PieceFile;
 
 public class MoveValidator {
+	private final String WHITE [] = {"WP","WR","WN","WQ", "QK", "WB"};
+	private final String BLACK [] = {"BP","BR","BN","BQ", "BK", "BB"};
 
     public static ArrayList<ReturnPiece> processsRegularMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
         // Implement the logic to process a regular move
@@ -106,9 +108,14 @@ public class MoveValidator {
                     break;
                 }
             }
+            
 
             // Remove the existing piece at the destination square, if any
             if (destinationIndex != -1) {
+            	for (int i = 0; i < newPiecesOnBoard.size(); i++) {
+            		//check destination piece type to prevent deletion
+            		
+            	}
                 newPiecesOnBoard.remove(destinationIndex);
             }
 

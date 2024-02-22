@@ -93,7 +93,7 @@ public class Chess {
 						}
 
 					}
-					
+
 					// Additional handling for pawn promotion
 					if (moveParts.length == 3) {
 						String promotionPiece = moveParts[2];
