@@ -118,11 +118,11 @@ public class MoveValidator {
 
 
 			// Remove the existing piece at the destination square, if any
-			if (destinationIndex != -1) {
-				for (int i = 0; i < newPiecesOnBoard.size(); i++) {
+			if (destinationIndex != -1 && isSquareOccupied(destinationSquare, newPiecesOnBoard)) {
+				/*for (int i = 0; i < newPiecesOnBoard.size(); i++) {
 					//check destination piece type to prevent deletion
 
-				}
+				}*/
 				newPiecesOnBoard.remove(destinationIndex);
 			}
 
@@ -137,10 +137,11 @@ public class MoveValidator {
 		return newPiecesOnBoard;
 	}
 	public static boolean checkPawnMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
-	    System.out.println("Piece: " + piece);
+	    /*System.out.println("Piece: " + piece);
 	    System.out.println("Current Player: " + Chess.currentPlayer);
 	    System.out.println("Source Square: " + sourceSquare);
 	    System.out.println("Destination Square: " + destinationSquare);
+		*/
 
 	    if (piece.pieceType != ReturnPiece.PieceType.WP && piece.pieceType != ReturnPiece.PieceType.BP) {
 	        // Not a pawn
@@ -183,18 +184,19 @@ if (sourceFile == destFile && !isSquareOccupied(destinationSquare, piecesOnBoard
 	    	if (Chess.currentPlayer == Chess.Player.white) {
 	    		int doubleMoveRank = sourceRank + 2 * direction;
 	    		String doubleMoveSquare = sourceSquare.substring(0, 1) + doubleMoveRank;
-	    		System.out.println("Double Move Square: " + doubleMoveSquare);
+	    		//System.out.println("Double Move Square: " + doubleMoveSquare);
 	    		if (destinationSquare.equals(doubleMoveSquare)) {
 	    			return true;
 	    		}
 	    	} else {
 	    			int doubleMoveRank = sourceRank + direction; // Adjust the calculation
-	    		    String doubleMoveSquare = sourceSquare.substring(0, 1) + doubleMoveRank;
-	    		    System.out.println("Double Move Square: " + doubleMoveSquare);
-	    		    if (destinationSquare.equals(doubleMoveSquare)) {
-	    		        return true;
-	    		    }
-	    		}
+	    			String doubleMoveSquare = sourceSquare.substring(0, 1) + doubleMoveRank;
+	    			System.out.println("sourceSquare[0]" + sourceSquare.substring(0,1) + "doubleMoveRank: " + doubleMoveRank);
+	    			//System.out.println("Double Move Square: " + doubleMoveSquare);
+	    			if (destinationSquare.equals(doubleMoveSquare)) {
+	    				return true;
+	    			}
+	    	}
 	    	
 	    } else {
 	        if (destRank - sourceRank != direction) {
@@ -215,147 +217,6 @@ if (sourceFile == destFile && !isSquareOccupied(destinationSquare, piecesOnBoard
 	                    return true;
 	                } else {
 	                    System.out.println("Invalid capture");
-	                }
-	            }
-	        }
-	    }
-
-	    // TODO: Add more conditions for special pawn moves like en passant and promotion
-	    return false;
-	}
-
-
-
-	public static boolean checkPawnMove2(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
-		System.out.println("Piece: " + piece);
-		System.out.println("Current Player: " + Chess.currentPlayer);
-		System.out.println("Source Square: " + sourceSquare);
-		System.out.println("Destination Square: " + destinationSquare);
-		// ... (add more print statements)
-
-		if (piece.pieceType != ReturnPiece.PieceType.WP && piece.pieceType != ReturnPiece.PieceType.BP) {
-	        // Not a pawn
-	        return false;
-	    }
-
-	    Player piecePlayer = (piece.pieceType == ReturnPiece.PieceType.WP) ? Player.white : Player.black;
-
-	    // Check if it's the correct player's turn
-	    if (Chess.currentPlayer != piecePlayer) {
-	    	System.out.println("mismatch player and piece");
-	        return false;
-	    }
-
-	    int sourceFile = sourceSquare.charAt(0) - 'a';
-	    int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
-
-	    int destFile = destinationSquare.charAt(0) - 'a';
-	    int destRank = Character.getNumericValue(destinationSquare.charAt(1));
-
-		// Check if the pawn is moving forward
-		int direction = (piece.pieceType == ReturnPiece.PieceType.WP) ? 1 : -1;
-
-		// Check if it's a double move on the first piece move
-		if (sourceFile == destFile && !isSquareOccupied(destinationSquare, piecesOnBoard) && isFirstMove(piece)) {
-		    int doubleMoveRank = sourceRank + (2 * direction);
-		    String doubleMoveSquare = sourceSquare.substring(0, 1) + doubleMoveRank;
-		    if (destinationSquare.equals(doubleMoveSquare)) {
-		        return true;
-		    }
-		} else {
-		    if (destRank - sourceRank != direction) {
-		        // Pawn must move forward by one square
-		        return false;
-		    } else {
-		        // Check if it's a standard forward move
-		        if (sourceFile == destFile && !isSquareOccupied(destinationSquare, piecesOnBoard)) {
-		            return true;
-		        } else {
-		            // Check if it's a capture
-		            if (Math.abs(destFile - sourceFile) == 1 && isSquareOccupied(destinationSquare, piecesOnBoard)) {
-		                return true;
-		            }
-		        }
-		    }
-		}
-
-		/*// Check if it's a double move on the first piece move
-		if (sourceFile == destFile && !isSquareOccupied(destinationSquare, piecesOnBoard) && isFirstMove(piece)) {
-			int doubleMoveRank = sourceRank + 2 * direction;
-			String doubleMoveSquare = sourceSquare.substring(0, 1) + doubleMoveRank;
-			if (destinationSquare.equals(doubleMoveSquare)) {
-				return true;
-			}
-		} else {
-			if (destRank - sourceRank != direction) {
-				// Pawn must move forward by one square
-				return false;
-			} else {
-				// Check if it's a standard forward move
-				if (sourceFile == destFile && !isSquareOccupied(destinationSquare, piecesOnBoard)) {
-					return true;
-				} else {
-					// Check if it's a capture
-					if (Math.abs(destFile - sourceFile) == 1 && isSquareOccupied(destinationSquare, piecesOnBoard)) {
-						return true;
-					}
-				}
-			}
-		}*/
-		// Check if the pawn is moving forward
-		//int direction = (piece.pieceType == ReturnPiece.PieceType.WP) ? 1 : -1;
-
-		// Check if the current player is allowed to move this pawn
-		/*if ((piece.pieceType == ReturnPiece.PieceType.WP && Chess.currentPlayer != Player.white)
-		    || (piece.pieceType == ReturnPiece.PieceType.BP && Chess.currentPlayer != Player.black)) {
-		    return false;
-		}*/
-
-		// TODO: Add more conditions for special pawn moves like en passant and promotion
-
-		return false;
-	}
-	public static boolean checkPawnMove1(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
-	    if (piece.pieceType != ReturnPiece.PieceType.WP && piece.pieceType != ReturnPiece.PieceType.BP) {
-	        // Not a pawn
-	        return false;
-	    }
-	    
-	    Player currentPlayer = (piece.pieceType == ReturnPiece.PieceType.WP) ? Player.white : Player.black;
-
-	    if ((piece.pieceType == ReturnPiece.PieceType.WP && currentPlayer != Player.white)
-	            || (piece.pieceType == ReturnPiece.PieceType.BP && currentPlayer != Player.black)) {
-	        return false;
-	    }
-
-	    int sourceFile = sourceSquare.charAt(0) - 'a';
-	    int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
-
-	    int destFile = destinationSquare.charAt(0) - 'a';
-	    int destRank = Character.getNumericValue(destinationSquare.charAt(1));
-
-	    // Check if the pawn is moving forward
-	    int direction = (piece.pieceType == ReturnPiece.PieceType.WP) ? 1 : -1;
-
-	    // Check if it's a double move on the first piece move
-	    if (sourceFile == destFile && !isSquareOccupied(destinationSquare, piecesOnBoard) && isFirstMove(piece)) {
-	        int doubleMoveRank = sourceRank + 2 * direction;
-	        String doubleMoveSquare = sourceSquare.substring(0, 1) + doubleMoveRank;
-	        if (destinationSquare.equals(doubleMoveSquare)) {
-	            return true;
-	        }
-	    } else {
-	        if (destRank - sourceRank != direction) {
-	            // Pawn must move forward by one square
-	            return false;
-	        } else {
-	            // Check if it's a standard forward move
-	            if (sourceFile == destFile && !isSquareOccupied(destinationSquare, piecesOnBoard)) {
-	                return true;
-	            } else {
-	                // Check if it's a capture
-	                if (Math.abs(destFile - sourceFile) == 1 && isSquareOccupied(destinationSquare, piecesOnBoard)) {
-	                    return true;
 	                }
 	            }
 	        }
