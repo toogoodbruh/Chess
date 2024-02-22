@@ -78,7 +78,21 @@ public class Chess {
 					result.message = ReturnPlay.Message.ILLEGAL_MOVE;
 					return result;
 				} else {
+					//piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(1), piecesOnBoard);
+					for (int i = 0; i < piecesOnBoard.size(); i++) {
+						char file = piecesOnBoard.get(i).pieceFile.toString().charAt(0);
+						int rank = piecesOnBoard.get(i).pieceRank;
+						String filerank = file + "" + rank;
+						//System.out.println(file + "" + rank);
+						//if (moveParts[0].charAt(0) == file && (moveParts[0].charAt(1) == rank)) {
+						if (sourceSquare.charAt(0) == filerank.charAt(0) && sourceSquare.charAt(1) == filerank.charAt(1)) {
+							piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
+							//break;
+							return result;
+						}
 
+					}
+					
 					// Additional handling for pawn promotion
 					if (moveParts.length == 3) {
 						String promotionPiece = moveParts[2];
@@ -137,7 +151,7 @@ public class Chess {
 		// White pieces
 		// initialPieces.add(new ReturnPiece(ReturnPiece.PieceType.WR,
 		// ReturnPiece.PieceFile.a, 1));
-		ReturnPiece a = new ReturnPiece(); // WP
+		ReturnPiece a = new ReturnPiece();
 		ReturnPiece b = new ReturnPiece();
 		ReturnPiece c = new ReturnPiece();
 		ReturnPiece d = new ReturnPiece();
@@ -262,7 +276,6 @@ public class Chess {
 			initialPieces.add(a);
 			//System.out.println(file);
 		}
-
 
 		return initialPieces;
 	}
