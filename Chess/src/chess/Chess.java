@@ -47,7 +47,7 @@ public class Chess {
 		white, black
 	}
 
-	private static Player currentPlayer = Player.white;
+	public static Player currentPlayer = Player.white;
 
 	/**
 	 * Plays the next move for whichever player has the turn.
@@ -58,6 +58,8 @@ public class Chess {
 	 *         section "The Chess class" in the assignment description for details
 	 *         of the contents of the returned ReturnPlay instance.
 	 */
+
+
 	public static ReturnPlay play(String move) {
 
 		/* FILL IN THIS METHOD */
@@ -87,9 +89,22 @@ public class Chess {
 						//System.out.println(file + "" + rank);
 						//if (moveParts[0].charAt(0) == file && (moveParts[0].charAt(1) == rank)) {
 						if (sourceSquare.charAt(0) == filerank.charAt(0) && sourceSquare.charAt(1) == filerank.charAt(1)) {
-							piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
+							if (MoveValidator.checkPawnMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) {
+								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
+								System.out.println("current: " + currentPlayer);
+								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+								System.out.println("new: " + currentPlayer);
+								return result;
+							} else {
+								result.message = ReturnPlay.Message.ILLEGAL_MOVE;
+								System.out.println("current: " + currentPlayer);
+								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+								System.out.println("new: " + currentPlayer);
+								return result;
+							}
+							//piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
 							//break;
-							return result;
+							//return result;
 						}
 
 					}
