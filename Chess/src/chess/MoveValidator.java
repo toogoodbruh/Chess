@@ -56,7 +56,7 @@ public class MoveValidator {
     	
     	return newPiecesOnBoard;
     }
-    public static ArrayList<ReturnPiece> processRegularMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
+    public static ArrayList<ReturnPiece> processRegularMove1(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
         ArrayList<ReturnPiece> newPiecesOnBoard = new ArrayList<>(piecesOnBoard);
         System.out.println("processRegularMove");
 
@@ -72,21 +72,55 @@ public class MoveValidator {
             piece.pieceRank = Integer.parseInt(destinationSquare.substring(1));
 
             // Add the updated piece to the new position
+            //pieceIndex = newPiecesOnBoard.indexOf(piece);
             newPiecesOnBoard.add(piece);
         }
-        	/*for (int i = 0; i < piecesOnBoard.size(); i++) {
-        		char file = piecesOnBoard.get(i).pieceFile.toString().charAt(0);
-        	    int rank = piecesOnBoard.get(i).pieceRank;
-        	    if (destinationSquare.charAt(0) == file && destinationSquare.charAt(1) == rank) {
-        	    	piece.pieceRank = rank;
-        	    	piece.pieceFile = piecesOnBoard.get(i).pieceFile;
-        	    	piecesOnBoard.remove(i);
-        	    	break;
-        	    }
         	
-        }*/
 
         return piecesOnBoard;
+    }
+    
+    public static ArrayList<ReturnPiece> processRegularMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
+        ArrayList<ReturnPiece> newPiecesOnBoard = new ArrayList<>(piecesOnBoard);
+        System.out.println("processRegularMove");
+
+        // Find the index of the piece being moved
+        int pieceIndex = -1;
+        for (int i = 0; i < newPiecesOnBoard.size(); i++) {
+            if (newPiecesOnBoard.get(i).equals(piece)) {
+                pieceIndex = i;
+                break;
+            }
+        }
+
+        if (pieceIndex != -1) {
+            // Remove the piece from the old position
+            newPiecesOnBoard.remove(pieceIndex);
+
+            // Check if there is a piece at the destination square
+            int destinationIndex = -1;
+            for (int i = 0; i < newPiecesOnBoard.size(); i++) {
+                if (newPiecesOnBoard.get(i).pieceFile == ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1))
+                        && newPiecesOnBoard.get(i).pieceRank == Integer.parseInt(destinationSquare.substring(1))) {
+                    destinationIndex = i;
+                    break;
+                }
+            }
+
+            // Remove the existing piece at the destination square, if any
+            if (destinationIndex != -1) {
+                newPiecesOnBoard.remove(destinationIndex);
+            }
+
+            // Update the piece with the new position
+            piece.pieceFile = ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1));
+            piece.pieceRank = Integer.parseInt(destinationSquare.substring(1));
+
+            // Add the updated piece to the new position
+            newPiecesOnBoard.add(piece);
+        }
+
+        return newPiecesOnBoard;
     }
 
 
