@@ -205,145 +205,303 @@ public class MoveValidator {
 	}
 
 	public static ArrayList<ReturnPiece> processRegularMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
-	    ArrayList<ReturnPiece> newPiecesOnBoard = new ArrayList<>(piecesOnBoard);
+		ArrayList<ReturnPiece> newPiecesOnBoard = new ArrayList<>(piecesOnBoard);
 
-	    // Find the index of the piece being moved
-	    int pieceIndex = -1;
-	    for (int i = 0; i < newPiecesOnBoard.size(); i++) {
-	        if (newPiecesOnBoard.get(i).equals(piece)) {
-	            pieceIndex = i;
-	            break;
-	        }
-	    }
+		// Find the index of the piece being moved
+		int pieceIndex = -1;
+		for (int i = 0; i < newPiecesOnBoard.size(); i++) {
+			if (newPiecesOnBoard.get(i).equals(piece)) {
+				pieceIndex = i;
+				break;
+			}
+		}
 
-	    // Remove the piece from the old position
-	    newPiecesOnBoard.remove(pieceIndex);
+		// Remove the piece from the old position
+		newPiecesOnBoard.remove(pieceIndex);
 
-	    // Check if there is a piece at the destination square
-	    int destinationIndex = -1;
-	    for (int i = 0; i < newPiecesOnBoard.size(); i++) {
-	        if (newPiecesOnBoard.get(i).pieceFile == ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1))
-	                && newPiecesOnBoard.get(i).pieceRank == Integer.parseInt(destinationSquare.substring(1))) {
-	            destinationIndex = i;
-	            break;
-	        }
-	    }
+		// Check if there is a piece at the destination square
+		int destinationIndex = -1;
+		for (int i = 0; i < newPiecesOnBoard.size(); i++) {
+			if (newPiecesOnBoard.get(i).pieceFile == ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1))
+					&& newPiecesOnBoard.get(i).pieceRank == Integer.parseInt(destinationSquare.substring(1))) {
+				destinationIndex = i;
+				break;
+			}
+		}
 
-	    if (destinationIndex != -1) {
-	        // Destination square is occupied
-	        ReturnPiece occupyingPiece = newPiecesOnBoard.get(destinationIndex);
+		if (destinationIndex != -1) {
+			// Destination square is occupied
+			ReturnPiece occupyingPiece = newPiecesOnBoard.get(destinationIndex);
 
-	        // Check if the occupying piece is of the same color
-	        if (occupyingPiece.pieceType.toString().substring(0, 1).equals(piece.pieceType.toString().substring(0, 1))) {
-	            // Pieces of the same color, do not switch places
-	            newPiecesOnBoard.add(piece); // Add the piece back to its original position
-	        } else {
-	            // Update the piece with the new position
-	            piece.pieceFile = ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1));
-	            piece.pieceRank = Integer.parseInt(destinationSquare.substring(1));
+			// Check if the occupying piece is of the same color
+			if (occupyingPiece.pieceType.toString().substring(0, 1).equals(piece.pieceType.toString().substring(0, 1))) {
+				// Pieces of the same color, do not switch places
+				newPiecesOnBoard.add(piece); // Add the piece back to its original position
+			} else {
+				// Update the piece with the new position
+				piece.pieceFile = ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1));
+				piece.pieceRank = Integer.parseInt(destinationSquare.substring(1));
 
-	            // Remove the existing piece at the destination square
-	            newPiecesOnBoard.remove(destinationIndex);
+				// Remove the existing piece at the destination square
+				newPiecesOnBoard.remove(destinationIndex);
 
-	            // Add the updated piece to the new position
-	            newPiecesOnBoard.add(piece);
-	        }
-	    } else {
-	        // Destination square is empty, move the piece
-	        piece.pieceFile = ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1));
-	        piece.pieceRank = Integer.parseInt(destinationSquare.substring(1));
+				// Add the updated piece to the new position
+				newPiecesOnBoard.add(piece);
+			}
+		} else {
+			// Destination square is empty, move the piece
+			piece.pieceFile = ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1));
+			piece.pieceRank = Integer.parseInt(destinationSquare.substring(1));
 
-	        // Add the updated piece to the new position
-	        newPiecesOnBoard.add(piece);
-	    }
+			// Add the updated piece to the new position
+			newPiecesOnBoard.add(piece);
+		}
 
-	    return newPiecesOnBoard;
+		return newPiecesOnBoard;
 	}
 	public static boolean checkBishopMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
+		System.out.println("Checking bishop move from " + sourceSquare + " to " + destinationSquare);
+
+		// Check if the move is diagonal
+		if (isDiagonalMove(sourceSquare, destinationSquare)) {
+			// Check if the path is clear (no pieces in the way)
+			if (!isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard)) {
+				// Check if the destination square is unoccupied or has an opponent's piece
+				if (!isSquareOccupiedBySameColor(destinationSquare, piece.pieceType, piecesOnBoard)) {
+					return true; // Valid bishop move
+				}
+			}
+		}
+
 		return false;
+	}
+
+	// Helper method to check if the move is diagonal
+	private static boolean isDiagonalMove(String sourceSquare, String destinationSquare) {
+		int sourceFile = sourceSquare.charAt(0) - 'a';
+		int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
+
+		int destFile = destinationSquare.charAt(0) - 'a';
+		int destRank = Character.getNumericValue(destinationSquare.charAt(1));
+
+		return Math.abs(destFile - sourceFile) == Math.abs(destRank - sourceRank);
 	}
 	public static boolean checkKnightMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
-		return false;
+		System.out.println("Checking knight move from " + sourceSquare + " to " + destinationSquare);
+
+		int sourceFile = sourceSquare.charAt(0) - 'a';
+		int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
+
+		int destFile = destinationSquare.charAt(0) - 'a';
+		int destRank = Character.getNumericValue(destinationSquare.charAt(1));
+
+		// Check if the move is an L-shape (knight move)
+		int fileDifference = Math.abs(destFile - sourceFile);
+		int rankDifference = Math.abs(destRank - sourceRank);
+
+		return (fileDifference == 1 && rankDifference == 2) || (fileDifference == 2 && rankDifference == 1);
 	}
-	public static boolean checkKingMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
-		return false;
-	}
-	
+
+
 	public static boolean checkRookMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
-	    System.out.println("Checking rook move from " + sourceSquare + " to " + destinationSquare);
+		System.out.println("Checking rook move from " + sourceSquare + " to " + destinationSquare);
 
-	    // Check if the move is either vertical or horizontal
-	    boolean isVerticalMove = sourceSquare.charAt(0) == destinationSquare.charAt(0);
-	    boolean isHorizontalMove = sourceSquare.charAt(1) == destinationSquare.charAt(1);
+		// Check if the move is either vertical or horizontal
+		boolean isVerticalMove = sourceSquare.charAt(0) == destinationSquare.charAt(0);
+		boolean isHorizontalMove = sourceSquare.charAt(1) == destinationSquare.charAt(1);
 
-	    // Check if the provided piece is indeed a rook
-	    if (piece.pieceType != ReturnPiece.PieceType.WR && piece.pieceType != ReturnPiece.PieceType.BR) {
-	        return false;
-	    }
+		// Check if the provided piece is indeed a rook
+		if (piece.pieceType != ReturnPiece.PieceType.WR && piece.pieceType != ReturnPiece.PieceType.BR) {
+			return false;
+		}
 
-	    // Check if there are no pieces in the path of the rook
-	    if (isVerticalMove || isHorizontalMove) {
-	    	boolean res = !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard);
-	    	System.out.println(res);
-	        return res;
-	    }
+		// Check if there are no pieces in the path of the rook
+		if (isVerticalMove || isHorizontalMove) {
+			boolean res = !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard);
+			System.out.println(res);
+			return res;
+		}
 
-	    return false;
+		return false;
 	}
 
 
 	public static boolean checkQueenMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
-	    System.out.println("Checking queen move from " + sourceSquare + " to " + destinationSquare);
+		System.out.println("Checking queen move from " + sourceSquare + " to " + destinationSquare);
 
-	    // Check if the move is either vertical, horizontal, or diagonal
-	    boolean isVerticalMove = sourceSquare.charAt(0) == destinationSquare.charAt(0);
-	    boolean isHorizontalMove = sourceSquare.charAt(1) == destinationSquare.charAt(1);
-	    boolean isDiagonalMove = Math.abs(sourceSquare.charAt(0) - destinationSquare.charAt(0)) ==
-	            Math.abs(sourceSquare.charAt(1) - destinationSquare.charAt(1));
+		// Check if the move is either vertical, horizontal, or diagonal
+		boolean isVerticalMove = sourceSquare.charAt(0) == destinationSquare.charAt(0);
+		boolean isHorizontalMove = sourceSquare.charAt(1) == destinationSquare.charAt(1);
+		boolean isDiagonalMove = Math.abs(sourceSquare.charAt(0) - destinationSquare.charAt(0)) ==
+				Math.abs(sourceSquare.charAt(1) - destinationSquare.charAt(1));
 
-	    // Check if the provided piece is indeed a queen
-	    if (piece.pieceType != ReturnPiece.PieceType.WQ && piece.pieceType != ReturnPiece.PieceType.BQ) {
-	        return false;
-	    }
+		// Check if the provided piece is indeed a queen
+		if (piece.pieceType != ReturnPiece.PieceType.WQ && piece.pieceType != ReturnPiece.PieceType.BQ) {
+			return false;
+		}
 
-	    // Check if there are no pieces in the path of the queen
-	    if (isVerticalMove || isHorizontalMove || isDiagonalMove) {
-	        boolean res = !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard)
-	                && !isSquareOccupiedBySameColor(destinationSquare, piece.pieceType, piecesOnBoard);
-	        System.out.println(res);
-	        return res;
-	    }
+		// Check if there are no pieces in the path of the queen
+		if (isVerticalMove || isHorizontalMove || isDiagonalMove) {
+			boolean res = !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard)
+					&& !isSquareOccupiedBySameColor(destinationSquare, piece.pieceType, piecesOnBoard);
+			System.out.println(res);
+			return res;
+		}
 
-	    System.out.println("Result: " + !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard));
-	    return !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard);
+		System.out.println("Result: " + !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard));
+		return !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard);
+	}
+	public static boolean checkKingMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
+        // Check if it's a castling move
+        if (isCastlingMove(sourceSquare, destinationSquare, piece, piecesOnBoard)) {
+            // Implement logic for castling
+            // Example: return handleCastling(sourceSquare, destinationSquare, piece, piecesOnBoard);
+            return false; // Replace with actual implementation
+            
+        }
+        int sourceFile = sourceSquare.charAt(0) - 'a';
+        int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
+
+        int destFile = destinationSquare.charAt(0) - 'a';
+        int destRank = Character.getNumericValue(destinationSquare.charAt(1));
+
+        // Check if it's a standard king move
+        if (Math.abs(destFile - sourceFile) <= 1 && Math.abs(destRank - sourceRank) <= 1) {
+            if (!isSquareOccupied(destinationSquare, piecesOnBoard)) {
+                return true;
+            } else {
+                System.out.println("Square occupied");
+            }
+        } else {
+            System.out.println("Invalid king move");
+        }
+
+        // TODO: Add more conditions for special king moves like castling
+        return false;
+    }
+        // Rest of the existing code for standard king move check...
+	private static boolean isCastlingMove(String sourceSquare, String destinationSquare, ReturnPiece king, ArrayList<ReturnPiece> piecesOnBoard) {
+        int sourceFile = sourceSquare.charAt(0) - 'a';
+        int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
+
+        int destFile = destinationSquare.charAt(0) - 'a';
+        int destRank = Character.getNumericValue(destinationSquare.charAt(1));
+
+        // Check if it's a castling move
+        if (king.pieceType == ReturnPiece.PieceType.WK && sourceFile == 4 && sourceRank == 1 && destFile == 6 && destRank == 1) {
+            // White kingside castling
+            return true;
+        } else if (king.pieceType == ReturnPiece.PieceType.WK && sourceFile == 4 && sourceRank == 1 && destFile == 2 && destRank == 1) {
+            // White queenside castling
+            return true;
+        } else if (king.pieceType == ReturnPiece.PieceType.BK && sourceFile == 4 && sourceRank == 8 && destFile == 6 && destRank == 8) {
+            // Black kingside castling
+            return true;
+        } else if (king.pieceType == ReturnPiece.PieceType.BK && sourceFile == 4 && sourceRank == 8 && destFile == 2 && destRank == 8) {
+            // Black queenside castling
+            return true;
+        }
+
+        return false;
+    }
+
+	private static boolean handleCastling(String sourceSquare, String destinationSquare, ReturnPiece king, ArrayList<ReturnPiece> piecesOnBoard) {
+        int sourceFile = sourceSquare.charAt(0) - 'a';
+        int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
+
+        int destFile = destinationSquare.charAt(0) - 'a';
+        int destRank = Character.getNumericValue(destinationSquare.charAt(1));
+
+        // Check if it's a kingside castling move
+        if (king.pieceType == ReturnPiece.PieceType.WK && sourceFile == 4 && sourceRank == 1 && destFile == 6 && destRank == 1) {
+            // White kingside castling
+            // Move the king
+            processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
+
+            // Move the kingside rook
+            ReturnPiece kingsideRook = findPieceAtSquare("h1", piecesOnBoard, ReturnPiece.PieceType.WR);
+            processRegularMove("h1", "f1", kingsideRook, piecesOnBoard);
+
+            // Update flags
+            Chess.wKingFlag++;
+
+            return true;
+        } else if (king.pieceType == ReturnPiece.PieceType.BK && sourceFile == 4 && sourceRank == 8 && destFile == 6 && destRank == 8) {
+            // Black kingside castling
+            // Move the king
+            processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
+
+            // Move the kingside rook
+            ReturnPiece kingsideRook = findPieceAtSquare("h8", piecesOnBoard, ReturnPiece.PieceType.BR);
+            processRegularMove("h8", "f8", kingsideRook, piecesOnBoard);
+
+            // Update flags
+            Chess.bKingFlag++;
+
+            return true;
+        } else if (king.pieceType == ReturnPiece.PieceType.WK && sourceFile == 4 && sourceRank == 1 && destFile == 2 && destRank == 1) {
+            // White queenside castling
+            // Move the king
+            processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
+
+            // Move the queenside rook
+            ReturnPiece queensideRook = findPieceAtSquare("a1", piecesOnBoard, ReturnPiece.PieceType.WR);
+            processRegularMove("a1", "d1", queensideRook, piecesOnBoard);
+
+            // Update flags
+            Chess.wKingFlag++;
+
+            return true;
+        } else if (king.pieceType == ReturnPiece.PieceType.BK && sourceFile == 4 && sourceRank == 8 && destFile == 2 && destRank == 8) {
+            // Black queenside castling
+            // Move the king
+            processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
+
+            // Move the queenside rook
+            ReturnPiece queensideRook = findPieceAtSquare("a8", piecesOnBoard, ReturnPiece.PieceType.BR);
+            processRegularMove("a8", "d8", queensideRook, piecesOnBoard);
+
+            // Update flags
+            Chess.bKingFlag++;
+
+            return true;
+        }
+
+        return false;
+    }
+
+	// Helper method to check if the king has already moved
+	private static boolean hasKingMoved(ReturnPiece king) {
+		return (king.pieceType == ReturnPiece.PieceType.WK && Chess.wKingFlag > 0) ||
+	            (king.pieceType == ReturnPiece.PieceType.BK && Chess.bKingFlag > 0);
 	}
 
 
 	// Helper method to check if the square is occupied by a piece of the same color
 	private static boolean isSquareOccupiedBySameColor(String square, ReturnPiece.PieceType pieceType, ArrayList<ReturnPiece> piecesOnBoard) {
-	    for (ReturnPiece piece : piecesOnBoard) {
-	        if (piece.pieceFile.toString().equals(square.substring(0, 1))
-	                && piece.pieceRank == Character.getNumericValue(square.charAt(1))
-	                && piece.pieceType.toString().substring(0, 1).equals(pieceType.toString().substring(0, 1))) {
-	            return true;
-	        }
-	    }
-	    return false;
+		for (ReturnPiece piece : piecesOnBoard) {
+			if (piece.pieceFile.toString().equals(square.substring(0, 1))
+					&& piece.pieceRank == Character.getNumericValue(square.charAt(1))
+					&& piece.pieceType.toString().substring(0, 1).equals(pieceType.toString().substring(0, 1))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	// Update the isSquareOccupied method
 	private static boolean isSquareOccupied(String square, ArrayList<ReturnPiece> piecesOnBoard) {
-	    for (ReturnPiece piece : piecesOnBoard) {
-	        if (piece.pieceFile.toString().equals(square.substring(0, 1))
-	                && piece.pieceRank == Character.getNumericValue(square.charAt(1))) {
-	            if (isSquareOccupiedBySameColor(square, piece.pieceType, piecesOnBoard)) {
-	                return true;
-	            } else {
-	                return false;
-	            }
-	        }
-	    }
-	    return false;
+		for (ReturnPiece piece : piecesOnBoard) {
+			if (piece.pieceFile.toString().equals(square.substring(0, 1))
+					&& piece.pieceRank == Character.getNumericValue(square.charAt(1))) {
+				if (isSquareOccupiedBySameColor(square, piece.pieceType, piecesOnBoard)) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+		return false;
 	}
 
 
@@ -457,11 +615,51 @@ public class MoveValidator {
 			}
 		}
 
-
+		// Check for en passant
+		if (isEnPassantMove(sourceSquare, destinationSquare, piecesOnBoard)) {
+			return true;
+		}
 
 		// TODO: Add more conditions for special pawn moves like en passant and promotion
 		return false;
 	}
+
+	private static boolean isEnPassantMove(String sourceSquare, String destinationSquare, ArrayList<ReturnPiece> piecesOnBoard) {
+		int sourceFile = sourceSquare.charAt(0) - 'a';
+		int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
+
+		int destFile = destinationSquare.charAt(0) - 'a';
+		int destRank = Character.getNumericValue(destinationSquare.charAt(1));
+
+		// Check if the move is diagonal and one square away
+		if (Math.abs(destFile - sourceFile) == 1 && Math.abs(destRank - sourceRank) == 1) {
+			// Check for en passant conditions
+			// En passant capture can occur if there is a pawn next to the destination square
+
+			// Determine the potential en passant capture square
+			String enPassantCaptureSquare;
+			if (Chess.currentPlayer == Player.white) {
+				enPassantCaptureSquare = "" + (char) ('a' + destFile) + (destRank - 1);
+			} else {
+				enPassantCaptureSquare = "" + (char) ('a' + destFile) + (destRank + 1);
+			}
+
+			// Check if there is a pawn at the en passant capture square
+			for (ReturnPiece piece : piecesOnBoard) {
+				if (piece.pieceType == ReturnPiece.PieceType.WP || piece.pieceType == ReturnPiece.PieceType.BP) {
+					if (piece.pieceFile.toString().equals(enPassantCaptureSquare.substring(0, 1))
+							&& piece.pieceRank == Character.getNumericValue(enPassantCaptureSquare.charAt(1))) {
+						// En passant capture is valid, remove the captured pawn from the board
+						piecesOnBoard.remove(piece);
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
 
 	private static boolean isFirstMove(ReturnPiece piece) {
 		// Check if it's the pawn's first move
@@ -469,7 +667,7 @@ public class MoveValidator {
 				|| (piece.pieceType == ReturnPiece.PieceType.BP && piece.pieceRank == 7);
 	}
 
-	
+
 	public static boolean processPawnPromotion(String sourceSquare, String destinationSquare, String promotionPiece, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
 		// Find the pawn at the source square
 		ReturnPiece pawnToPromote = findPieceAtSquare(sourceSquare, piecesOnBoard, ReturnPiece.PieceType.WP, ReturnPiece.PieceType.BP);

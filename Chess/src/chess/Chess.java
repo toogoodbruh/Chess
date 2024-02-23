@@ -42,6 +42,7 @@ class ReturnPlay {
 
 public class Chess {
 	static ArrayList<ReturnPiece> piecesOnBoard = new ArrayList<ReturnPiece>();
+	static int wKingFlag = 0, bKingFlag = 0;
 
 	enum Player {
 		white, black
@@ -106,6 +107,27 @@ public class Chess {
 								result.piecesOnBoard = piecesOnBoard;
 								return result;
 							} else if (MoveValidator.checkRookMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
+								System.out.println("rook move true in play()");
+								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
+								System.out.println("current: " + currentPlayer);
+								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+								System.out.println("new: " + currentPlayer);
+								result.piecesOnBoard = piecesOnBoard;
+							} else if (MoveValidator.checkBishopMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
+								System.out.println("rook move true in play()");
+								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
+								System.out.println("current: " + currentPlayer);
+								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+								System.out.println("new: " + currentPlayer);
+								result.piecesOnBoard = piecesOnBoard;
+							} else if (MoveValidator.checkKnightMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
+								System.out.println("rook move true in play()");
+								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
+								System.out.println("current: " + currentPlayer);
+								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+								System.out.println("new: " + currentPlayer);
+								result.piecesOnBoard = piecesOnBoard;
+							} else if (MoveValidator.checkKingMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
 								System.out.println("rook move true in play()");
 								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
 								System.out.println("current: " + currentPlayer);
@@ -183,6 +205,8 @@ public class Chess {
 	public static void start() {
 		/* FILL IN THIS METHOD */
 		piecesOnBoard = initialSetup();
+		wKingFlag = 0;
+		bKingFlag = 0;
 	}
 
 	private static ArrayList<ReturnPiece> initialSetup() {
