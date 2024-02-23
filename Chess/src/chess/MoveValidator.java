@@ -165,17 +165,13 @@ public class MoveValidator {
 				newPiecesOnBoard.remove(destinationIndex);
 				//if (piece.pieceType == ReturnPiece.PieceType.WP)  piece.pieceType = ReturnPiece.PieceType.BP; 
 				//if (piece.pieceType == ReturnPiece.PieceType.BP)  piece.pieceType = ReturnPiece.PieceType.WP; 
-				System.out.println("new? pieceType: " + piece.pieceType );
+				if (DEBUG) System.out.println("new? pieceType: " + piece.pieceType );
 			}
-			// Remove the existing piece at the destination square, if any
-			// if (destinationIndex != -1 && isSquareOccupied(destinationSquare, newPiecesOnBoard)) {
-			//     newPiecesOnBoard.remove(destinationIndex);
-			// }
 
 			// Update the piece with the new position
 			piece.pieceFile = ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1));
 			piece.pieceRank = Integer.parseInt(destinationSquare.substring(1));
-			System.out.println("pieceType: " + piece.pieceType);
+			if (DEBUG) System.out.println("pieceType: " + piece.pieceType);
 
 			// Add the updated piece to the new position
 			newPiecesOnBoard.add(piece);
@@ -195,11 +191,12 @@ public class MoveValidator {
 
 
 	public static boolean checkPawnMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
-	    /*System.out.println("Piece: " + piece);
-	    System.out.println("Current Player: " + Chess.currentPlayer);
-	    System.out.println("Source Square: " + sourceSquare);
-	    System.out.println("Destination Square: " + destinationSquare);
-		*/
+		if (DEBUG) {
+		    System.out.println("Piece: " + piece);
+		    System.out.println("Current Player: " + Chess.currentPlayer);
+		    System.out.println("Source Square: " + sourceSquare);
+		    System.out.println("Destination Square: " + destinationSquare);
+		}
 
 	    if (piece.pieceType != ReturnPiece.PieceType.WP && piece.pieceType != ReturnPiece.PieceType.BP) {
 	        // Not a pawn
