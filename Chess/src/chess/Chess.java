@@ -98,13 +98,20 @@ public class Chess {
 								result.piecesOnBoard = piecesOnBoard;
 								return result;
 							} else if (MoveValidator.checkQueenMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) {
-								System.out.println("queen move true in play()");
+								//System.out.println("queen move true in play()");
 								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
 								System.out.println("current: " + currentPlayer);
 								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
 								System.out.println("new: " + currentPlayer);
 								result.piecesOnBoard = piecesOnBoard;
 								return result;
+							} else if (MoveValidator.checkRookMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
+								System.out.println("rook move true in play()");
+								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
+								System.out.println("current: " + currentPlayer);
+								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+								System.out.println("new: " + currentPlayer);
+								result.piecesOnBoard = piecesOnBoard;
 							} else {
 								result.message = ReturnPlay.Message.ILLEGAL_MOVE;
 								System.out.println("current: " + currentPlayer);
