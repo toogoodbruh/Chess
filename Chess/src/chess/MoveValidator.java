@@ -85,59 +85,6 @@ public class MoveValidator {
 		return piecesOnBoard;
 	}
 
-	public static ArrayList<ReturnPiece> processRegularMoveSomewhatworks(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
-		ArrayList<ReturnPiece> newPiecesOnBoard = new ArrayList<>(piecesOnBoard);
-		System.out.println("processRegularMove");
-		Player piecePlayer = (piece.pieceType == ReturnPiece.PieceType.WP) ? Player.white : Player.black;
-
-		// Check if it's the correct player's turn
-		if (Chess.currentPlayer != piecePlayer) {
-			return piecesOnBoard;
-		}
-
-
-		// Find the index of the piece being moved
-		int pieceIndex = -1;
-		for (int i = 0; i < newPiecesOnBoard.size(); i++) {
-			if (newPiecesOnBoard.get(i).equals(piece)) {
-				pieceIndex = i;
-				break;
-			}
-		}
-
-		if (pieceIndex != -1) {
-			// Remove the piece from the old position
-			newPiecesOnBoard.remove(pieceIndex);
-
-			// Check if there is a piece at the destination square
-			int destinationIndex = -1;
-			for (int i = 0; i < newPiecesOnBoard.size(); i++) {
-				if (newPiecesOnBoard.get(i).pieceFile == ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1))
-						&& newPiecesOnBoard.get(i).pieceRank == Integer.parseInt(destinationSquare.substring(1))) {
-					destinationIndex = i;
-					break;
-				}
-			}
-
-
-			// Remove the existing piece at the destination square, if any
-			/*if (destinationIndex != -1 && isSquareOccupied(destinationSquare, newPiecesOnBoard)) {
-
-				newPiecesOnBoard.remove(destinationIndex);
-			}*/
-
-			// Update the piece with the new position
-			piece.pieceFile = ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1));
-			piece.pieceRank = Integer.parseInt(destinationSquare.substring(1));
-
-			// Add the updated piece to the new position
-			newPiecesOnBoard.add(piece);
-		}
-
-
-		return newPiecesOnBoard;
-	}
-
 	public static ArrayList<ReturnPiece> processRegularMove_Works(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
 		ArrayList<ReturnPiece> newPiecesOnBoard = new ArrayList<>(piecesOnBoard);
 
@@ -188,7 +135,7 @@ public class MoveValidator {
 		return newPiecesOnBoard;
 	}
 
-	public static ArrayList<ReturnPiece> processRegularMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
+	public static ArrayList<ReturnPiece> processRegularMoveWorks(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
 		ArrayList<ReturnPiece> newPiecesOnBoard = new ArrayList<>(piecesOnBoard);
 
 		// Find the index of the piece being moved
@@ -257,6 +204,63 @@ public class MoveValidator {
 		return newPiecesOnBoard;
 	}
 
+	public static ArrayList<ReturnPiece> processRegularMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
+	    ArrayList<ReturnPiece> newPiecesOnBoard = new ArrayList<>(piecesOnBoard);
+
+	    // Find the index of the piece being moved
+	    int pieceIndex = -1;
+	    for (int i = 0; i < newPiecesOnBoard.size(); i++) {
+	        if (newPiecesOnBoard.get(i).equals(piece)) {
+	            pieceIndex = i;
+	            break;
+	        }
+	    }
+
+	    // Remove the piece from the old position
+	    newPiecesOnBoard.remove(pieceIndex);
+
+	    // Check if there is a piece at the destination square
+	    int destinationIndex = -1;
+	    for (int i = 0; i < newPiecesOnBoard.size(); i++) {
+	        if (newPiecesOnBoard.get(i).pieceFile == ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1))
+	                && newPiecesOnBoard.get(i).pieceRank == Integer.parseInt(destinationSquare.substring(1))) {
+	            destinationIndex = i;
+	            break;
+	        }
+	    }
+
+	    if (destinationIndex != -1) {
+	        // Destination square is occupied
+	        ReturnPiece occupyingPiece = newPiecesOnBoard.get(destinationIndex);
+
+	        // Check if the occupying piece is of the same color
+	        if (occupyingPiece.pieceType.toString().substring(0, 1).equals(piece.pieceType.toString().substring(0, 1))) {
+	            // Pieces of the same color, do not switch places
+	            newPiecesOnBoard.add(piece); // Add the piece back to its original position
+	        } else {
+	            // Update the piece with the new position
+	            piece.pieceFile = ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1));
+	            piece.pieceRank = Integer.parseInt(destinationSquare.substring(1));
+
+	            // Remove the existing piece at the destination square
+	            newPiecesOnBoard.remove(destinationIndex);
+
+	            // Add the updated piece to the new position
+	            newPiecesOnBoard.add(piece);
+	        }
+	    } else {
+	        // Destination square is empty, move the piece
+	        piece.pieceFile = ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1));
+	        piece.pieceRank = Integer.parseInt(destinationSquare.substring(1));
+
+	        // Add the updated piece to the new position
+	        newPiecesOnBoard.add(piece);
+	    }
+
+	    return newPiecesOnBoard;
+	}
+
+
 	public static boolean checkQueenMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
 		System.out.println("Checking queen move from " + sourceSquare + " to " + destinationSquare);
 		// Check if the move is either vertical, horizontal, or diagonal
@@ -272,7 +276,9 @@ public class MoveValidator {
 
 		// Check if there are no pieces in the path of the queen
 		if (isVerticalMove || isHorizontalMove || isDiagonalMove) {
-			return !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard);
+			boolean res = !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard);
+			System.out.println(res);
+			return res;
 		}
 		System.out.println("Result: " + !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard));
 		return !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard);
@@ -291,6 +297,34 @@ public class MoveValidator {
 
 		int currentFile = sourceFile + fileDirection;
 		int currentRank = sourceRank + rankDirection;
+		// Find the index of the piece being moved
+		int pieceIndex = -1;
+		ReturnPiece piece = null, piece2 = null;
+		for (int i = 0; i < piecesOnBoard.size(); i++) {
+			if (piecesOnBoard.get(i).equals(piece)) {
+				pieceIndex = i;
+				piece = piecesOnBoard.get(pieceIndex);
+				break;
+			}
+		}
+		if (pieceIndex != -1) {
+			// Check if there is a piece at the destination square
+			int destinationIndex = -1;
+			for (int i = 0; i < piecesOnBoard.size(); i++) {
+				if (piecesOnBoard.get(i).pieceFile == ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1))
+						&& piecesOnBoard.get(i).pieceRank == Integer.parseInt(destinationSquare.substring(1))) {
+					destinationIndex = i;
+					break;
+				}
+			}
+			if (isSquareOccupied(destinationSquare, piecesOnBoard) == true) {
+				//piecesOnBoard.remove(destinationIndex);
+				//if (piece.pieceType == ReturnPiece.PieceType.WP)  piece.pieceType = ReturnPiece.PieceType.BP; 
+				//if (piece.pieceType == ReturnPiece.PieceType.BP)  piece.pieceType = ReturnPiece.PieceType.WP; 
+				if (DEBUG) System.out.println("new? pieceType: " + piece.pieceType );
+				piece2 = piecesOnBoard.get(destinationIndex);
+			}
+		}
 
 		while (currentFile != destFile || currentRank != destRank) {
 			String currentSquare = "" + (char) ('a' + currentFile) + currentRank;
@@ -371,8 +405,30 @@ public class MoveValidator {
 		return (piece.pieceType == ReturnPiece.PieceType.WP && piece.pieceRank == 2)
 				|| (piece.pieceType == ReturnPiece.PieceType.BP && piece.pieceRank == 7);
 	}
-
 	private static boolean isSquareOccupied(String square, ArrayList<ReturnPiece> piecesOnBoard) {
+		for (ReturnPiece piece : piecesOnBoard) {
+			System.out.println("Checking piece: " + piece);
+			System.out.println("Square: " + square);
+			if (piece.pieceFile.toString().equals(square.substring(0, 1))
+					&& piece.pieceRank == Character.getNumericValue(square.charAt(1))) {
+				if (DEBUG) System.out.println("Square is occupied by: " + piece);
+
+				// Check if the piece is of the same color
+				if (piece.pieceType.toString().substring(0, 1).equals(square.substring(0, 1))) {
+					return true;
+				} else {
+					// Different color, so it's not occupied by the same color
+					return false;
+				}
+			}
+		}
+		System.out.println("Square is not occupied.");
+		return false;
+	}
+
+
+
+	private static boolean isSquareOccupied_Orig(String square, ArrayList<ReturnPiece> piecesOnBoard) {
 		for (ReturnPiece piece : piecesOnBoard) {
 			if (piece.pieceFile.toString().equals(square.substring(0, 1))
 					&& piece.pieceRank == Character.getNumericValue(square.charAt(1))) {

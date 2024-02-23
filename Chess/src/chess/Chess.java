@@ -97,14 +97,14 @@ public class Chess {
 								System.out.println("new: " + currentPlayer);
 								result.piecesOnBoard = piecesOnBoard;
 								return result;
-							} /*else if (MoveValidator.checkQueenMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) {
+							} else if (MoveValidator.checkQueenMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) {
 								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
 								System.out.println("current: " + currentPlayer);
 								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
 								System.out.println("new: " + currentPlayer);
 								result.piecesOnBoard = piecesOnBoard;
 								return result;
-							} */else {
+							} else {
 								result.message = ReturnPlay.Message.ILLEGAL_MOVE;
 								System.out.println("current: " + currentPlayer);
 								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
@@ -115,28 +115,21 @@ public class Chess {
 							//break;
 							//return result;
 						}
-							 /*else {
-									result.message = ReturnPlay.Message.ILLEGAL_MOVE;
-									System.out.println("current: " + currentPlayer);
-									currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
-									System.out.println("new: " + currentPlayer);
-									return result;
-								}*/
-						} /*else {
-							result.message = ReturnPlay.Message.ILLEGAL_MOVE;
-							System.out.println("current: " + currentPlayer);
-							currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
-							System.out.println("new: " + currentPlayer);
-							return result;
-						}*/
+					}
 
 
-					
+
 
 					// Additional handling for pawn promotion
 					if (moveParts.length == 3) {
 						String promotionPiece = moveParts[2];
 						// Handle promotionPiece (e.g., "N" for knight, "Q" for queen, etc.)
+						for (int i = 0; i < piecesOnBoard.size(); i++) {
+							char file = piecesOnBoard.get(i).pieceFile.toString().charAt(0);
+							int rank = piecesOnBoard.get(i).pieceRank;
+							String filerank = file + "" + rank;
+						}
+						
 					}
 
 					// Now you have sourceSquare and destinationSquare, you can process the move
