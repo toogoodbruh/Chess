@@ -97,6 +97,13 @@ public class Chess {
 								System.out.println("new: " + currentPlayer);
 								result.piecesOnBoard = piecesOnBoard;
 								return result;
+							} else if (MoveValidator.checkQueenMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) {
+								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
+								System.out.println("current: " + currentPlayer);
+								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+								System.out.println("new: " + currentPlayer);
+								result.piecesOnBoard = piecesOnBoard;
+								return result;
 							} else {
 								result.message = ReturnPlay.Message.ILLEGAL_MOVE;
 								System.out.println("current: " + currentPlayer);
@@ -108,8 +115,23 @@ public class Chess {
 							//break;
 							//return result;
 						}
+							 /*else {
+									result.message = ReturnPlay.Message.ILLEGAL_MOVE;
+									System.out.println("current: " + currentPlayer);
+									currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+									System.out.println("new: " + currentPlayer);
+									return result;
+								}*/
+						} /*else {
+							result.message = ReturnPlay.Message.ILLEGAL_MOVE;
+							System.out.println("current: " + currentPlayer);
+							currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+							System.out.println("new: " + currentPlayer);
+							return result;
+						}*/
 
-					}
+
+					
 
 					// Additional handling for pawn promotion
 					if (moveParts.length == 3) {

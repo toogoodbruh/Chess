@@ -188,7 +188,52 @@ public class MoveValidator {
 		return newPiecesOnBoard;
 	}
 
+	public static boolean checkQueenMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
+		System.out.println("Checking queen move from " + sourceSquare + " to " + destinationSquare);
+	    // Check if the move is either vertical, horizontal, or diagonal
+	    boolean isVerticalMove = sourceSquare.charAt(0) == destinationSquare.charAt(0);
+	    boolean isHorizontalMove = sourceSquare.charAt(1) == destinationSquare.charAt(1);
+	    boolean isDiagonalMove = Math.abs(sourceSquare.charAt(0) - destinationSquare.charAt(0)) ==
+	                             Math.abs(sourceSquare.charAt(1) - destinationSquare.charAt(1));
 
+	    // Check if the provided piece is indeed a queen
+	    if (piece.pieceType != ReturnPiece.PieceType.WQ && piece.pieceType != ReturnPiece.PieceType.BQ) {
+	        return false;
+	    }
+
+	    // Check if there are no pieces in the path of the queen
+	    if (isVerticalMove || isHorizontalMove || isDiagonalMove) {
+	        return !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard);
+	    }
+	    System.out.println("Result: " + !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard));
+	    return !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard);
+	}
+
+
+	// Helper method to check if the path between sourceSquare and destinationSquare is occupied
+	private static boolean isPathOccupied(String sourceSquare, String destinationSquare, ArrayList<ReturnPiece> piecesOnBoard) {
+	    int sourceFile = sourceSquare.charAt(0) - 'a';
+	    int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
+	    int destFile = destinationSquare.charAt(0) - 'a';
+	    int destRank = Character.getNumericValue(destinationSquare.charAt(1));
+
+	    int fileDirection = Integer.compare(destFile, sourceFile);
+	    int rankDirection = Integer.compare(destRank, sourceRank);
+
+	    int currentFile = sourceFile + fileDirection;
+	    int currentRank = sourceRank + rankDirection;
+
+	    while (currentFile != destFile || currentRank != destRank) {
+	        String currentSquare = "" + (char) ('a' + currentFile) + currentRank;
+	        if (isSquareOccupied(currentSquare, piecesOnBoard)) {
+	            return true; // Path is occupied
+	        }
+	        currentFile += fileDirection;
+	        currentRank += rankDirection;
+	    }
+
+	    return false; // Path is not occupied
+	}
 
 	public static boolean checkPawnMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
 		if (DEBUG) {
