@@ -1,3 +1,8 @@
+/**
+ * Contributers: Akshaj Kammari, Gabe Nydick
+ * CS213 Project 1
+ * 2/26/2024
+*/
 package chess;
 
 import java.util.ArrayList;

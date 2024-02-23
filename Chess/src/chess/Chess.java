@@ -1,4 +1,8 @@
-//Contributers: Akshaj Kammari, Gabe Nydick
+/**
+ * Contributers: Akshaj Kammari, Gabe Nydick
+ * CS213 Project 1
+ * 2/26/2024
+*/
 package chess;
 
 import java.util.ArrayList;
@@ -41,6 +45,7 @@ class ReturnPlay {
 }
 
 public class Chess {
+	private static final boolean DEBUG = true;
 	static ArrayList<ReturnPiece> piecesOnBoard = new ArrayList<ReturnPiece>();
 	static int wKingFlag = 0, bKingFlag = 0;
 
@@ -87,11 +92,9 @@ public class Chess {
 						char file = piecesOnBoard.get(i).pieceFile.toString().charAt(0);
 						int rank = piecesOnBoard.get(i).pieceRank;
 						String filerank = file + "" + rank;
-						//System.out.println(file + "" + rank);
-						//if (moveParts[0].charAt(0) == file && (moveParts[0].charAt(1) == rank)) {
-						//if (sourceSquare.charAt(0) == filerank.charAt(0) && sourceSquare.charAt(1) == filerank.charAt(1)) {
 						if (sourceSquare.equals(filerank) && sourceSquare.charAt(1) == filerank.charAt(1)) {
 							if (MoveValidator.checkPawnMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) {
+								if (DEBUG) System.out.println("pawn move true in play()");
 								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
 								System.out.println("current: " + currentPlayer);
 								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
@@ -99,7 +102,7 @@ public class Chess {
 								result.piecesOnBoard = piecesOnBoard;
 								return result;
 							} else if (MoveValidator.checkQueenMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) {
-								//System.out.println("queen move true in play()");
+								if (DEBUG) System.out.println("queen move true in play()");
 								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
 								System.out.println("current: " + currentPlayer);
 								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
@@ -107,7 +110,7 @@ public class Chess {
 								result.piecesOnBoard = piecesOnBoard;
 								return result;
 							} else if (MoveValidator.checkRookMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
-								System.out.println("rook move true in play()");
+								if (DEBUG) System.out.println("rook move true in play()");
 								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
 								System.out.println("current: " + currentPlayer);
 								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
@@ -115,7 +118,7 @@ public class Chess {
 								result.piecesOnBoard = piecesOnBoard;
 								return result;
 							} else if (MoveValidator.checkBishopMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
-								System.out.println("bishop move true in play()");
+								if (DEBUG) System.out.println("bishop move true in play()");
 								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
 								System.out.println("current: " + currentPlayer);
 								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
@@ -123,7 +126,7 @@ public class Chess {
 								result.piecesOnBoard = piecesOnBoard;
 								return result;
 							} else if (MoveValidator.checkKnightMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
-								System.out.println("rook move true in play()");
+								if (DEBUG) System.out.println("rook move true in play()");
 								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
 								System.out.println("current: " + currentPlayer);
 								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
@@ -135,7 +138,7 @@ public class Chess {
 							else if (MoveValidator.checkKingMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
 								if (MoveValidator.isCastlingMove(sourceSquare, destinationSquare,
 										piecesOnBoard.get(i), piecesOnBoard) == true) {
-									System.out.println("king castling move true in play()");
+									if (DEBUG) System.out.println("king castling move true in play()");
 									// If king move is valid, process the move
 									piecesOnBoard = MoveValidator.handleCastling(sourceSquare, destinationSquare,
 											piecesOnBoard.get(i), piecesOnBoard);
@@ -143,7 +146,7 @@ public class Chess {
 									result.piecesOnBoard = piecesOnBoard;
 									return result;
 								} else {
-									System.out.println("king move true in play()");
+									if (DEBUG) System.out.println("king move true in play()");
 									piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
 									System.out.println("current: " + currentPlayer);
 									currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
