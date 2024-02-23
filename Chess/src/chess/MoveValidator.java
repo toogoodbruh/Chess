@@ -260,8 +260,62 @@ public class MoveValidator {
 	    return newPiecesOnBoard;
 	}
 
-
 	public static boolean checkQueenMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
+	    System.out.println("Checking queen move from " + sourceSquare + " to " + destinationSquare);
+
+	    // Check if the move is either vertical, horizontal, or diagonal
+	    boolean isVerticalMove = sourceSquare.charAt(0) == destinationSquare.charAt(0);
+	    boolean isHorizontalMove = sourceSquare.charAt(1) == destinationSquare.charAt(1);
+	    boolean isDiagonalMove = Math.abs(sourceSquare.charAt(0) - destinationSquare.charAt(0)) ==
+	            Math.abs(sourceSquare.charAt(1) - destinationSquare.charAt(1));
+
+	    // Check if the provided piece is indeed a queen
+	    if (piece.pieceType != ReturnPiece.PieceType.WQ && piece.pieceType != ReturnPiece.PieceType.BQ) {
+	        return false;
+	    }
+
+	    // Check if there are no pieces in the path of the queen
+	    if (isVerticalMove || isHorizontalMove || isDiagonalMove) {
+	        boolean res = !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard)
+	                && !isSquareOccupiedBySameColor(destinationSquare, piece.pieceType, piecesOnBoard);
+	        System.out.println(res);
+	        return res;
+	    }
+
+	    System.out.println("Result: " + !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard));
+	    return !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard);
+	}
+
+
+	// Helper method to check if the square is occupied by a piece of the same color
+	private static boolean isSquareOccupiedBySameColor(String square, ReturnPiece.PieceType pieceType, ArrayList<ReturnPiece> piecesOnBoard) {
+	    for (ReturnPiece piece : piecesOnBoard) {
+	        if (piece.pieceFile.toString().equals(square.substring(0, 1))
+	                && piece.pieceRank == Character.getNumericValue(square.charAt(1))
+	                && piece.pieceType.toString().substring(0, 1).equals(pieceType.toString().substring(0, 1))) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+
+	// Update the isSquareOccupied method
+	private static boolean isSquareOccupied(String square, ArrayList<ReturnPiece> piecesOnBoard) {
+	    for (ReturnPiece piece : piecesOnBoard) {
+	        if (piece.pieceFile.toString().equals(square.substring(0, 1))
+	                && piece.pieceRank == Character.getNumericValue(square.charAt(1))) {
+	            if (isSquareOccupiedBySameColor(square, piece.pieceType, piecesOnBoard)) {
+	                return true;
+	            } else {
+	                return false;
+	            }
+	        }
+	    }
+	    return false;
+	}
+
+
+	public static boolean checkQueenMove1(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
 		System.out.println("Checking queen move from " + sourceSquare + " to " + destinationSquare);
 		// Check if the move is either vertical, horizontal, or diagonal
 		boolean isVerticalMove = sourceSquare.charAt(0) == destinationSquare.charAt(0);
@@ -339,6 +393,7 @@ public class MoveValidator {
 	}
 
 	public static boolean checkPawnMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
+		System.out.println("Checking pawn move from " + sourceSquare + " to " + destinationSquare);
 		if (DEBUG) {
 			System.out.println("Piece: " + piece);
 			System.out.println("Current Player: " + Chess.currentPlayer);
@@ -405,7 +460,7 @@ public class MoveValidator {
 		return (piece.pieceType == ReturnPiece.PieceType.WP && piece.pieceRank == 2)
 				|| (piece.pieceType == ReturnPiece.PieceType.BP && piece.pieceRank == 7);
 	}
-	private static boolean isSquareOccupied(String square, ArrayList<ReturnPiece> piecesOnBoard) {
+	private static boolean isSquareOccupied_2(String square, ArrayList<ReturnPiece> piecesOnBoard) {
 		for (ReturnPiece piece : piecesOnBoard) {
 			System.out.println("Checking piece: " + piece);
 			System.out.println("Square: " + square);

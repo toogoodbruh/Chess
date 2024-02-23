@@ -98,6 +98,7 @@ public class Chess {
 								result.piecesOnBoard = piecesOnBoard;
 								return result;
 							} else if (MoveValidator.checkQueenMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) {
+								System.out.println("queen move true in play()");
 								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
 								System.out.println("current: " + currentPlayer);
 								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
@@ -205,11 +206,11 @@ public class Chess {
 		a.pieceRank = 1;
 		initialPieces.add(a);
 		//BR 1
-		/*a = new ReturnPiece();
+		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.BR;
 		a.pieceFile = ReturnPiece.PieceFile.a;
 		a.pieceRank = 8;
-		initialPieces.add(a);*/
+		initialPieces.add(a);
 		//BR 2
 		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.BR;
