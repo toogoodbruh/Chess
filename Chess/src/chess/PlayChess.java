@@ -2,6 +2,7 @@
  * Contributers: Akshaj Kammari, Gabe Nydick
  * CS213 Project 1
  * 2/26/2024
+ * https://www.cs.rutgers.edu/courses/213/classes/spring_2024_venugopal/chess/chess.html
 */
 package chess;
 
@@ -32,6 +33,10 @@ public class PlayChess {
 				if (res.message == ReturnPlay.Message.RESIGN_BLACK_WINS || res.message == ReturnPlay.Message.RESIGN_WHITE_WINS) {
 					newGame = true;
 					System.out.println("\n\nresign\n");
+				}
+				if (res.message == ReturnPlay.Message.DRAW) {
+					newGame = true;
+					System.out.println("\n\ndraw\n");
 				}
 			}
 			System.out.println();

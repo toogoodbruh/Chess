@@ -2,7 +2,8 @@
  * Contributers: Akshaj Kammari, Gabe Nydick
  * CS213 Project 1
  * 2/26/2024
-*/
+ * https://www.cs.rutgers.edu/courses/213/classes/spring_2024_venugopal/chess/chess.html
+ */
 package chess;
 
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ public class Chess {
 	private static final boolean DEBUG = true;
 	static ArrayList<ReturnPiece> piecesOnBoard = new ArrayList<ReturnPiece>();
 	static int wKingFlag = 0, bKingFlag = 0;
+	static boolean drawFlag = false;
 
 	enum Player {
 		white, black
@@ -77,12 +79,15 @@ public class Chess {
 
 		// Split the move into individual parts
 		String[] moveParts = move.split("\\s+");
-
-		if (isValidMoveFormat(move) == true) {
+		String checkStringForValidMove;
+		checkStringForValidMove = (moveParts.length >= 2) ?  moveParts[0] + " " + moveParts[1] : moveParts[0]; //does not include possible draw or promotion piece
+		if (isValidMoveFormat(checkStringForValidMove) == true) {
 			// Regular move or pawn promotion
 			if (moveParts.length > 1) {
-				String sourceSquare = moveParts[0];
-				String destinationSquare = moveParts[1];
+				String sourceSquare = moveParts[0].strip();
+				String destinationSquare = moveParts[1].strip();
+				String originalSourceSquare = sourceSquare;
+				String originalDestinationSquare = destinationSquare;
 				if (!isValidSquare(sourceSquare) || !isValidSquare(destinationSquare)) {
 					result.message = ReturnPlay.Message.ILLEGAL_MOVE;
 					return result;
@@ -92,80 +97,103 @@ public class Chess {
 						char file = piecesOnBoard.get(i).pieceFile.toString().charAt(0);
 						int rank = piecesOnBoard.get(i).pieceRank;
 						String filerank = file + "" + rank;
-						if (sourceSquare.equals(filerank) && sourceSquare.charAt(1) == filerank.charAt(1)) {
-							if (MoveValidator.checkPawnMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) {
-								if (DEBUG) System.out.println("pawn move true in play()");
-								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
-								System.out.println("current: " + currentPlayer);
-								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
-								System.out.println("new: " + currentPlayer);
-								result.piecesOnBoard = piecesOnBoard;
-								return result;
-							} else if (MoveValidator.checkQueenMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) {
-								if (DEBUG) System.out.println("queen move true in play()");
-								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
-								System.out.println("current: " + currentPlayer);
-								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
-								System.out.println("new: " + currentPlayer);
-								result.piecesOnBoard = piecesOnBoard;
-								return result;
-							} else if (MoveValidator.checkRookMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
-								if (DEBUG) System.out.println("rook move true in play()");
-								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
-								System.out.println("current: " + currentPlayer);
-								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
-								System.out.println("new: " + currentPlayer);
-								result.piecesOnBoard = piecesOnBoard;
-								return result;
-							} else if (MoveValidator.checkBishopMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
-								if (DEBUG) System.out.println("bishop move true in play()");
-								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
-								System.out.println("current: " + currentPlayer);
-								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
-								System.out.println("new: " + currentPlayer);
-								result.piecesOnBoard = piecesOnBoard;
-								return result;
-							} else if (MoveValidator.checkKnightMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
-								if (DEBUG) System.out.println("rook move true in play()");
-								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
-								System.out.println("current: " + currentPlayer);
-								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
-								System.out.println("new: " + currentPlayer);
-								result.piecesOnBoard = piecesOnBoard;
-								return result;
-							} //else if (piecesOnBoard.get(i).pieceType == ReturnPiece.PieceType.WK
-									//|| piecesOnBoard.get(i).pieceType == ReturnPiece.PieceType.BK) {
-							else if (MoveValidator.checkKingMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
-								if (MoveValidator.isCastlingMove(sourceSquare, destinationSquare,
-										piecesOnBoard.get(i), piecesOnBoard) == true) {
-									if (DEBUG) System.out.println("king castling move true in play()");
-									// If king move is valid, process the move
-									piecesOnBoard = MoveValidator.handleCastling(sourceSquare, destinationSquare,
-											piecesOnBoard.get(i), piecesOnBoard);
-									currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
-									result.piecesOnBoard = piecesOnBoard;
-									return result;
-								} else {
-									if (DEBUG) System.out.println("king move true in play()");
+						//System.out.println("before string length check");
+						if (moveParts.length == 3 && moveParts[2].equalsIgnoreCase("draw?")) {
+							if (DEBUG) System.out.println("draw found");
+							drawFlag = true;
+							String sendString = originalSourceSquare + " " + originalDestinationSquare;
+							result = Chess.play(sendString);
+							result.message = ReturnPlay.Message.DRAW;
+							return result;
+						} else {
+							if (sourceSquare.equals(filerank) && sourceSquare.charAt(1) == filerank.charAt(1) && moveParts.length == 2) {
+								if (MoveValidator.checkPawnMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) {
+									if (DEBUG) System.out.println("pawn move true in play()");
 									piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
 									System.out.println("current: " + currentPlayer);
 									currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
 									System.out.println("new: " + currentPlayer);
 									result.piecesOnBoard = piecesOnBoard;
+									if (drawFlag) result.message = ReturnPlay.Message.DRAW;
+									drawFlag = false;
+									return result;
+								} else if (MoveValidator.checkQueenMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) {
+									if (DEBUG) System.out.println("queen move true in play()");
+									piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
+									System.out.println("current: " + currentPlayer);
+									currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+									System.out.println("new: " + currentPlayer);
+									result.piecesOnBoard = piecesOnBoard;
+									if (drawFlag) result.message = ReturnPlay.Message.DRAW;
+									drawFlag = false;
+									return result;
+								} else if (MoveValidator.checkRookMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
+									if (DEBUG) System.out.println("rook move true in play()");
+									piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
+									System.out.println("current: " + currentPlayer);
+									currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+									System.out.println("new: " + currentPlayer);
+									result.piecesOnBoard = piecesOnBoard;
+									if (drawFlag) result.message = ReturnPlay.Message.DRAW;
+									drawFlag = false;
+									return result;
+								} else if (MoveValidator.checkBishopMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
+									if (DEBUG) System.out.println("bishop move true in play()");
+									piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
+									System.out.println("current: " + currentPlayer);
+									currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+									System.out.println("new: " + currentPlayer);
+									result.piecesOnBoard = piecesOnBoard;
+									if (drawFlag) result.message = ReturnPlay.Message.DRAW;
+									drawFlag = false;
+									return result;
+								} else if (MoveValidator.checkKnightMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
+									if (DEBUG) System.out.println("rook move true in play()");
+									piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
+									System.out.println("current: " + currentPlayer);
+									currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+									System.out.println("new: " + currentPlayer);
+									result.piecesOnBoard = piecesOnBoard;
+									if (drawFlag) result.message = ReturnPlay.Message.DRAW;
+									drawFlag = false;
+									return result;
+								} else if (MoveValidator.checkKingMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
+									if (MoveValidator.isCastlingMove(sourceSquare, destinationSquare,
+											piecesOnBoard.get(i), piecesOnBoard) == true) {
+										if (DEBUG) System.out.println("king castling move true in play()");
+										// If king move is valid, process the move
+										piecesOnBoard = MoveValidator.handleCastling(sourceSquare, destinationSquare,
+												piecesOnBoard.get(i), piecesOnBoard);
+										currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+										result.piecesOnBoard = piecesOnBoard;
+										if (drawFlag) result.message = ReturnPlay.Message.DRAW;
+										drawFlag = false;
+										return result;
+									} else {
+										if (DEBUG) System.out.println("king move true in play()");
+										piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
+										System.out.println("current: " + currentPlayer);
+										currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+										System.out.println("new: " + currentPlayer);
+										result.piecesOnBoard = piecesOnBoard;
+										if (drawFlag) result.message = ReturnPlay.Message.DRAW;
+										drawFlag = false;
+										return result;
+									}
+								} else {
+									result.message = ReturnPlay.Message.ILLEGAL_MOVE;
+									System.out.println("current: " + currentPlayer);
+									currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+									System.out.println("new: " + currentPlayer);
 									return result;
 								}
-							} else {
-								result.message = ReturnPlay.Message.ILLEGAL_MOVE;
-								System.out.println("current: " + currentPlayer);
-								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
-								System.out.println("new: " + currentPlayer);
-								return result;
+								//piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
+								//break;
+								//return result;
 							}
-							//piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
-							//break;
-							//return result;
 						}
 					}
+
 
 
 
@@ -178,6 +206,18 @@ public class Chess {
 							char file = piecesOnBoard.get(i).pieceFile.toString().charAt(0);
 							int rank = piecesOnBoard.get(i).pieceRank;
 							String filerank = file + "" + rank;
+							if (sourceSquare.equals(filerank) && sourceSquare.charAt(1) == filerank.charAt(1)) {
+								if (MoveValidator.checkPawnMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true 
+										&& MoveValidator.processPawnPromotion(sourceSquare, destinationSquare, promotionPiece, piecesOnBoard.get(i), piecesOnBoard)) {
+									if (DEBUG) System.out.println("pawn promotion true in play() specified piece: " + promotionPiece);
+									piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
+									System.out.println("current: " + currentPlayer);
+									currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+									System.out.println("new: " + currentPlayer);
+									result.piecesOnBoard = piecesOnBoard;
+									return result;
+								}
+							}
 						}
 
 					}
@@ -185,15 +225,18 @@ public class Chess {
 					// Now you have sourceSquare and destinationSquare, you can process the move
 					// Example: result.piecesOnBoard = processRegularMove(sourceSquare,
 					// destinationSquare);
-					else if (moveParts.length == 3 && moveParts[2].equals("draw?")) {
+					/*else if (moveParts.length == 3 && moveParts[2].equals("draw?")) {
 						// Draw offer
 						sourceSquare = moveParts[0];
 						destinationSquare = moveParts[1];
 						// Example: result.piecesOnBoard = processDrawOffer(sourceSquare,
 						// destinationSquare);
-						result.message = ReturnPlay.Message.DRAW;
-					} 
+						//result.message = ReturnPlay.Message.DRAW;
+						drawFlag = true;
+						Chess.play(sourceSquare + " " + destinationSquare);
+					}*/ 
 				}
+
 			} else if (moveParts.length == 1 && moveParts[0].equals("resign")) {
 				// Resignation
 				result.message = (currentPlayer == Player.white) ? ReturnPlay.Message.RESIGN_BLACK_WINS : ReturnPlay.Message.RESIGN_WHITE_WINS;
@@ -227,6 +270,7 @@ public class Chess {
 		piecesOnBoard = initialSetup();
 		wKingFlag = 0;
 		bKingFlag = 0;
+		drawFlag = false;
 	}
 
 	private static ArrayList<ReturnPiece> initialSetup() {

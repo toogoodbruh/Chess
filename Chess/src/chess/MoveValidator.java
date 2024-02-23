@@ -2,7 +2,8 @@
  * Contributers: Akshaj Kammari, Gabe Nydick
  * CS213 Project 1
  * 2/26/2024
-*/
+ * https://www.cs.rutgers.edu/courses/213/classes/spring_2024_venugopal/chess/chess.html
+ */
 package chess;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -163,128 +164,128 @@ public class MoveValidator {
 		return !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard);
 	}
 	public static boolean checkKingMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
-        // Check if it's a castling move
-        if (isCastlingMove(sourceSquare, destinationSquare, piece, piecesOnBoard)) {
-            // Implement logic for castling
-            // Example: return handleCastling(sourceSquare, destinationSquare, piece, piecesOnBoard);
-            return false; // Replace with actual implementation
-            
-        }
-        int sourceFile = sourceSquare.charAt(0) - 'a';
-        int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
+		// Check if it's a castling move
+		if (isCastlingMove(sourceSquare, destinationSquare, piece, piecesOnBoard)) {
+			// Implement logic for castling
+			// Example: return handleCastling(sourceSquare, destinationSquare, piece, piecesOnBoard);
+			return false; // Replace with actual implementation
 
-        int destFile = destinationSquare.charAt(0) - 'a';
-        int destRank = Character.getNumericValue(destinationSquare.charAt(1));
+		}
+		int sourceFile = sourceSquare.charAt(0) - 'a';
+		int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
 
-        // Check if it's a standard king move
-        if (Math.abs(destFile - sourceFile) <= 1 && Math.abs(destRank - sourceRank) <= 1) {
-            if (!isSquareOccupied(destinationSquare, piecesOnBoard)) {
-                return true;
-            } else {
-                System.out.println("Square occupied");
-            }
-        } else {
-            System.out.println("Invalid king move");
-        }
+		int destFile = destinationSquare.charAt(0) - 'a';
+		int destRank = Character.getNumericValue(destinationSquare.charAt(1));
 
-        // TODO: Add more conditions for special king moves like castling
-        return false;
-    }
-        // Rest of the existing code for standard king move check...
+		// Check if it's a standard king move
+		if (Math.abs(destFile - sourceFile) <= 1 && Math.abs(destRank - sourceRank) <= 1) {
+			if (!isSquareOccupied(destinationSquare, piecesOnBoard)) {
+				return true;
+			} else {
+				System.out.println("Square occupied");
+			}
+		} else {
+			System.out.println("Invalid king move");
+		}
+
+		// TODO: Add more conditions for special king moves like castling
+		return false;
+	}
+	// Rest of the existing code for standard king move check...
 	public static boolean isCastlingMove(String sourceSquare, String destinationSquare, ReturnPiece king, ArrayList<ReturnPiece> piecesOnBoard) {
-        int sourceFile = sourceSquare.charAt(0) - 'a';
-        int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
+		int sourceFile = sourceSquare.charAt(0) - 'a';
+		int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
 
-        int destFile = destinationSquare.charAt(0) - 'a';
-        int destRank = Character.getNumericValue(destinationSquare.charAt(1));
+		int destFile = destinationSquare.charAt(0) - 'a';
+		int destRank = Character.getNumericValue(destinationSquare.charAt(1));
 
-        // Check if it's a castling move
-        if (king.pieceType == ReturnPiece.PieceType.WK && sourceFile == 4 && sourceRank == 1 && destFile == 6 && destRank == 1) {
-            // White kingside castling
-            return true;
-        } else if (king.pieceType == ReturnPiece.PieceType.WK && sourceFile == 4 && sourceRank == 1 && destFile == 2 && destRank == 1) {
-            // White queenside castling
-            return true;
-        } else if (king.pieceType == ReturnPiece.PieceType.BK && sourceFile == 4 && sourceRank == 8 && destFile == 6 && destRank == 8) {
-            // Black kingside castling
-            return true;
-        } else if (king.pieceType == ReturnPiece.PieceType.BK && sourceFile == 4 && sourceRank == 8 && destFile == 2 && destRank == 8) {
-            // Black queenside castling
-            return true;
-        }
+		// Check if it's a castling move
+		if (king.pieceType == ReturnPiece.PieceType.WK && sourceFile == 4 && sourceRank == 1 && destFile == 6 && destRank == 1) {
+			// White kingside castling
+			return true;
+		} else if (king.pieceType == ReturnPiece.PieceType.WK && sourceFile == 4 && sourceRank == 1 && destFile == 2 && destRank == 1) {
+			// White queenside castling
+			return true;
+		} else if (king.pieceType == ReturnPiece.PieceType.BK && sourceFile == 4 && sourceRank == 8 && destFile == 6 && destRank == 8) {
+			// Black kingside castling
+			return true;
+		} else if (king.pieceType == ReturnPiece.PieceType.BK && sourceFile == 4 && sourceRank == 8 && destFile == 2 && destRank == 8) {
+			// Black queenside castling
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
 	public static ArrayList<ReturnPiece> handleCastling(String sourceSquare, String destinationSquare, ReturnPiece king, ArrayList<ReturnPiece> piecesOnBoard) {
-        int sourceFile = sourceSquare.charAt(0) - 'a';
-        int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
+		int sourceFile = sourceSquare.charAt(0) - 'a';
+		int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
 
-        int destFile = destinationSquare.charAt(0) - 'a';
-        int destRank = Character.getNumericValue(destinationSquare.charAt(1));
+		int destFile = destinationSquare.charAt(0) - 'a';
+		int destRank = Character.getNumericValue(destinationSquare.charAt(1));
 
-        // Check if it's a kingside castling move
-        if (king.pieceType == ReturnPiece.PieceType.WK && sourceFile == 4 && sourceRank == 1 && destFile == 6 && destRank == 1) {
-            // White kingside castling
-            // Move the king
-            piecesOnBoard = processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
+		// Check if it's a kingside castling move
+		if (king.pieceType == ReturnPiece.PieceType.WK && sourceFile == 4 && sourceRank == 1 && destFile == 6 && destRank == 1) {
+			// White kingside castling
+			// Move the king
+			piecesOnBoard = processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
 
-            // Move the kingside rook
-            ReturnPiece kingsideRook = findPieceAtSquare("h1", piecesOnBoard, ReturnPiece.PieceType.WR);
-            piecesOnBoard = processRegularMove("h1", "f1", kingsideRook, piecesOnBoard);
+			// Move the kingside rook
+			ReturnPiece kingsideRook = findPieceAtSquare("h1", piecesOnBoard, ReturnPiece.PieceType.WR);
+			piecesOnBoard = processRegularMove("h1", "f1", kingsideRook, piecesOnBoard);
 
-            // Update flags
-            Chess.wKingFlag++;
+			// Update flags
+			Chess.wKingFlag++;
 
-            return piecesOnBoard;
-        } else if (king.pieceType == ReturnPiece.PieceType.BK && sourceFile == 4 && sourceRank == 8 && destFile == 6 && destRank == 8) {
-            // Black kingside castling
-            // Move the king
-            piecesOnBoard = processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
+			return piecesOnBoard;
+		} else if (king.pieceType == ReturnPiece.PieceType.BK && sourceFile == 4 && sourceRank == 8 && destFile == 6 && destRank == 8) {
+			// Black kingside castling
+			// Move the king
+			piecesOnBoard = processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
 
-            // Move the kingside rook
-            ReturnPiece kingsideRook = findPieceAtSquare("h8", piecesOnBoard, ReturnPiece.PieceType.BR);
-            processRegularMove("h8", "f8", kingsideRook, piecesOnBoard);
+			// Move the kingside rook
+			ReturnPiece kingsideRook = findPieceAtSquare("h8", piecesOnBoard, ReturnPiece.PieceType.BR);
+			processRegularMove("h8", "f8", kingsideRook, piecesOnBoard);
 
-            // Update flags
-            Chess.bKingFlag++;
+			// Update flags
+			Chess.bKingFlag++;
 
-            return piecesOnBoard;
-        } else if (king.pieceType == ReturnPiece.PieceType.WK && sourceFile == 4 && sourceRank == 1 && destFile == 2 && destRank == 1) {
-            // White queenside castling
-            // Move the king
-            piecesOnBoard = processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
+			return piecesOnBoard;
+		} else if (king.pieceType == ReturnPiece.PieceType.WK && sourceFile == 4 && sourceRank == 1 && destFile == 2 && destRank == 1) {
+			// White queenside castling
+			// Move the king
+			piecesOnBoard = processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
 
-            // Move the queenside rook
-            ReturnPiece queensideRook = findPieceAtSquare("a1", piecesOnBoard, ReturnPiece.PieceType.WR);
-            processRegularMove("a1", "d1", queensideRook, piecesOnBoard);
+			// Move the queenside rook
+			ReturnPiece queensideRook = findPieceAtSquare("a1", piecesOnBoard, ReturnPiece.PieceType.WR);
+			processRegularMove("a1", "d1", queensideRook, piecesOnBoard);
 
-            // Update flags
-            Chess.wKingFlag++;
+			// Update flags
+			Chess.wKingFlag++;
 
-            return piecesOnBoard;
-        } else if (king.pieceType == ReturnPiece.PieceType.BK && sourceFile == 4 && sourceRank == 8 && destFile == 2 && destRank == 8) {
-            // Black queenside castling
-            // Move the king
-            piecesOnBoard = processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
+			return piecesOnBoard;
+		} else if (king.pieceType == ReturnPiece.PieceType.BK && sourceFile == 4 && sourceRank == 8 && destFile == 2 && destRank == 8) {
+			// Black queenside castling
+			// Move the king
+			piecesOnBoard = processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
 
-            // Move the queenside rook
-           ReturnPiece queensideRook = findPieceAtSquare("a8", piecesOnBoard, ReturnPiece.PieceType.BR);
-           piecesOnBoard = processRegularMove("a8", "d8", queensideRook, piecesOnBoard);
+			// Move the queenside rook
+			ReturnPiece queensideRook = findPieceAtSquare("a8", piecesOnBoard, ReturnPiece.PieceType.BR);
+			piecesOnBoard = processRegularMove("a8", "d8", queensideRook, piecesOnBoard);
 
-            // Update flags
-            Chess.bKingFlag++;
+			// Update flags
+			Chess.bKingFlag++;
 
-            return piecesOnBoard;
-        }
+			return piecesOnBoard;
+		}
 
-        return piecesOnBoard;
-    }
+		return piecesOnBoard;
+	}
 
 	// Helper method to check if the king has already moved
 	private static boolean hasKingMoved(ReturnPiece king) {
 		return (king.pieceType == ReturnPiece.PieceType.WK && Chess.wKingFlag > 0) ||
-	            (king.pieceType == ReturnPiece.PieceType.BK && Chess.bKingFlag > 0);
+				(king.pieceType == ReturnPiece.PieceType.BK && Chess.bKingFlag > 0);
 	}
 
 
@@ -518,6 +519,88 @@ public class MoveValidator {
 		}
 		return null;
 	}
+	public static boolean isCheck(ArrayList<ReturnPiece> piecesOnBoard, Chess.Player currentPlayer) {
+		// Find the king of the current player
+		ReturnPiece king = findKing(piecesOnBoard, currentPlayer);
+
+		// Check if the opponent's pieces can attack the king's position
+		for (ReturnPiece opponentPiece : piecesOnBoard) {
+			if (opponentPiece.pieceType != ReturnPiece.PieceType.WK && opponentPiece.pieceType != ReturnPiece.PieceType.BK
+					&& opponentPiece.pieceType != ReturnPiece.PieceType.WP && opponentPiece.pieceType != ReturnPiece.PieceType.BP // exclude pawns for simplicity
+					&& isPieceAttackingSquare(opponentPiece, king.pieceFile, king.pieceRank)) {
+				// The king is in check
+				return true;
+			}
+		}
+
+		// The king is not in check
+		return false;
+	}
+
+	private static ReturnPiece findKing(ArrayList<ReturnPiece> piecesOnBoard, Chess.Player player) {
+		// Find the king of the specified player
+		ReturnPiece.PieceType kingType = (player == Chess.Player.white) ? ReturnPiece.PieceType.WK : ReturnPiece.PieceType.BK;
+
+		for (ReturnPiece piece : piecesOnBoard) {
+			if (piece.pieceType == kingType) {
+				return piece;
+			}
+		}
+
+		// King not found (this should not happen in a valid chess position)
+		return null;
+	}
+
+	private static boolean isPieceAttackingSquare(ReturnPiece piece, ReturnPiece.PieceFile file, int rank) {
+	    // Get the current position of the piece
+	    ReturnPiece.PieceFile pieceFile = piece.pieceFile;
+	    int pieceRank = piece.pieceRank;
+
+	    // Check based on the piece type
+	    switch (piece.pieceType) {
+	        case WP:
+	            // White pawn can attack diagonally forward left or right
+	            return (file == pieceFile && rank == pieceRank + 1) || // Move forward
+	                   ((file.ordinal() == pieceFile.ordinal() - 1 || file.ordinal() == pieceFile.ordinal() + 1) && rank == pieceRank + 1); // Attack diagonally
+
+	        case BP:
+	            // Black pawn can attack diagonally backward left or right
+	            return (file == pieceFile && rank == pieceRank - 1) || // Move backward
+	                   ((file.ordinal() == pieceFile.ordinal() - 1 || file.ordinal() == pieceFile.ordinal() + 1) && rank == pieceRank - 1); // Attack diagonally
+
+	        case WR:
+	        case BR:
+	            // Rook can attack in the same file or rank
+	            return file == pieceFile || rank == pieceRank;
+
+	        case WN:
+	        case BN:
+	            // Knight can attack in an L-shape (two squares in one direction and one square perpendicular)
+	            int fileDiff = Math.abs(file.ordinal() - pieceFile.ordinal());
+	            int rankDiff = Math.abs(rank - pieceRank);
+	            return (fileDiff == 2 && rankDiff == 1) || (fileDiff == 1 && rankDiff == 2);
+
+	        case WB:
+	        case BB:
+	            // Bishop can attack diagonally
+	            return Math.abs(file.ordinal() - pieceFile.ordinal()) == Math.abs(rank - pieceRank);
+
+	        case WQ:
+	        case BQ:
+	            // Queen can attack in the same file, rank, or diagonally
+	            return file == pieceFile || rank == pieceRank || Math.abs(file.ordinal() - pieceFile.ordinal()) == Math.abs(rank - pieceRank);
+
+	        case WK:
+	        case BK:
+	            // King can attack one square in any direction
+	            return Math.abs(file.ordinal() - pieceFile.ordinal()) <= 1 && Math.abs(rank - pieceRank) <= 1;
+
+	        default:
+	            return false; // Unknown piece type
+	    }
+	}
+
+
 
 	// Helper method to determine the promotion piece type based on the promotion string and pawn type
 	private static ReturnPiece.PieceType getPromotionPieceType(String promotionPiece, ReturnPiece.PieceType pawnType) {
