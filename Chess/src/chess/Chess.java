@@ -88,12 +88,14 @@ public class Chess {
 						String filerank = file + "" + rank;
 						//System.out.println(file + "" + rank);
 						//if (moveParts[0].charAt(0) == file && (moveParts[0].charAt(1) == rank)) {
-						if (sourceSquare.charAt(0) == filerank.charAt(0) && sourceSquare.charAt(1) == filerank.charAt(1)) {
+						//if (sourceSquare.charAt(0) == filerank.charAt(0) && sourceSquare.charAt(1) == filerank.charAt(1)) {
+						if (sourceSquare.equals(filerank) && sourceSquare.charAt(1) == filerank.charAt(1)) {
 							if (MoveValidator.checkPawnMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) {
 								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
 								System.out.println("current: " + currentPlayer);
 								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
 								System.out.println("new: " + currentPlayer);
+								result.piecesOnBoard = piecesOnBoard;
 								return result;
 							} else {
 								result.message = ReturnPlay.Message.ILLEGAL_MOVE;

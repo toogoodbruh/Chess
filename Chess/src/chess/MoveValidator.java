@@ -4,6 +4,7 @@ import chess.Chess.Player;
 import chess.ReturnPiece.PieceFile;
 
 public class MoveValidator {
+	private static final boolean DEBUG = false;
 	private final String WHITE [] = {"WP","WR","WN","WQ", "QK", "WB"};
 	private final String BLACK [] = {"BP","BR","BN","BQ", "BK", "BB"};
 
@@ -82,7 +83,7 @@ public class MoveValidator {
 		return piecesOnBoard;
 	}
 
-	public static ArrayList<ReturnPiece> processRegularMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
+	public static ArrayList<ReturnPiece> processRegularMoveSomewhatworks(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
 		ArrayList<ReturnPiece> newPiecesOnBoard = new ArrayList<>(piecesOnBoard);
 		System.out.println("processRegularMove");
 		Player piecePlayer = (piece.pieceType == ReturnPiece.PieceType.WP) ? Player.white : Player.black;
@@ -118,13 +119,10 @@ public class MoveValidator {
 
 
 			// Remove the existing piece at the destination square, if any
-			if (destinationIndex != -1 && isSquareOccupied(destinationSquare, newPiecesOnBoard)) {
-				/*for (int i = 0; i < newPiecesOnBoard.size(); i++) {
-					//check destination piece type to prevent deletion
-
-				}*/
+			/*if (destinationIndex != -1 && isSquareOccupied(destinationSquare, newPiecesOnBoard)) {
+				
 				newPiecesOnBoard.remove(destinationIndex);
-			}
+			}*/
 
 			// Update the piece with the new position
 			piece.pieceFile = ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1));
@@ -133,9 +131,69 @@ public class MoveValidator {
 			// Add the updated piece to the new position
 			newPiecesOnBoard.add(piece);
 		}
+		
 
 		return newPiecesOnBoard;
 	}
+	
+	public static ArrayList<ReturnPiece> processRegularMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
+		ArrayList<ReturnPiece> newPiecesOnBoard = new ArrayList<>(piecesOnBoard);
+
+		// Find the index of the piece being moved
+		int pieceIndex = -1;
+		for (int i = 0; i < newPiecesOnBoard.size(); i++) {
+			if (newPiecesOnBoard.get(i).equals(piece)) {
+				pieceIndex = i;
+				break;
+			}
+		}
+
+		if (pieceIndex != -1) {
+			// Remove the piece from the old position
+			newPiecesOnBoard.remove(pieceIndex);
+
+			// Check if there is a piece at the destination square
+			int destinationIndex = -1;
+			for (int i = 0; i < newPiecesOnBoard.size(); i++) {
+				if (newPiecesOnBoard.get(i).pieceFile == ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1))
+						&& newPiecesOnBoard.get(i).pieceRank == Integer.parseInt(destinationSquare.substring(1))) {
+					destinationIndex = i;
+					break;
+				}
+			}
+			if (isSquareOccupied(destinationSquare, newPiecesOnBoard) == true) {
+				newPiecesOnBoard.remove(destinationIndex);
+				//if (piece.pieceType == ReturnPiece.PieceType.WP)  piece.pieceType = ReturnPiece.PieceType.BP; 
+				//if (piece.pieceType == ReturnPiece.PieceType.BP)  piece.pieceType = ReturnPiece.PieceType.WP; 
+				System.out.println("new? pieceType: " + piece.pieceType );
+			}
+			// Remove the existing piece at the destination square, if any
+			// if (destinationIndex != -1 && isSquareOccupied(destinationSquare, newPiecesOnBoard)) {
+			//     newPiecesOnBoard.remove(destinationIndex);
+			// }
+
+			// Update the piece with the new position
+			piece.pieceFile = ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1));
+			piece.pieceRank = Integer.parseInt(destinationSquare.substring(1));
+			System.out.println("pieceType: " + piece.pieceType);
+
+			// Add the updated piece to the new position
+			newPiecesOnBoard.add(piece);
+		}
+		if (DEBUG) {
+			for (ReturnPiece p: newPiecesOnBoard) {
+				if (p.pieceType == ReturnPiece.PieceType.BP || p.pieceType == ReturnPiece.PieceType.WP) {
+					System.out.println(p);
+				}
+			}
+			System.out.println("size: " + newPiecesOnBoard.size());
+		}
+
+		return newPiecesOnBoard;
+	}
+
+
+
 	public static boolean checkPawnMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
 	    /*System.out.println("Piece: " + piece);
 	    System.out.println("Current Player: " + Chess.currentPlayer);
@@ -166,6 +224,30 @@ public class MoveValidator {
 	    int direction = (piece.pieceType == ReturnPiece.PieceType.WP) ? 1 : -1;
 
 	    System.out.println("Direction: " + direction);
+	 // Check if it's a standard forward move
+	    if (destRank - sourceRank == direction && sourceFile == destFile) {
+	        if (!isSquareOccupied(destinationSquare, piecesOnBoard)) {
+	            return true;
+	        } else {
+	            System.out.println("Square occupied");
+	        }
+	    } else if (sourceFile == destFile && !isSquareOccupied(destinationSquare, piecesOnBoard) && isFirstMove(piece)) {
+	        // Check if it's a double move on the first piece move
+	        int doubleMoveRank = sourceRank + 2 * direction;
+	        String doubleMoveSquare = sourceSquare.substring(0, 1) + doubleMoveRank;
+	        // System.out.println("Double Move Square: " + doubleMoveSquare);
+	        if (destinationSquare.equals(doubleMoveSquare)) {
+	            return true;
+	        }
+	    } else {
+	        // Check if it's a capture
+	        if (Math.abs(destFile - sourceFile) == 1 && isSquareOccupied(destinationSquare, piecesOnBoard)) {
+	            return true;
+	        } else {
+	            System.out.println("Invalid capture");
+	        }
+	    }
+
 
 	    /*
 	     * // Check if it's a double move on the first piece move
@@ -180,25 +262,35 @@ if (sourceFile == destFile && !isSquareOccupied(destinationSquare, piecesOnBoard
 
 	     */
 	    // Check if it's a double move on the first piece move
-	    if (sourceFile == destFile && !isSquareOccupied(destinationSquare, piecesOnBoard) && isFirstMove(piece)) {
-	    	if (Chess.currentPlayer == Chess.Player.white) {
+	    /*if (sourceFile == destFile && !isSquareOccupied(destinationSquare, piecesOnBoard) && isFirstMove(piece) && Chess.currentPlayer == Chess.Player.white) {
+	    	//if (Chess.currentPlayer == Chess.Player.white) {
 	    		int doubleMoveRank = sourceRank + 2 * direction;
 	    		String doubleMoveSquare = sourceSquare.substring(0, 1) + doubleMoveRank;
 	    		//System.out.println("Double Move Square: " + doubleMoveSquare);
 	    		if (destinationSquare.equals(doubleMoveSquare)) {
 	    			return true;
 	    		}
-	    	} else {
-	    			int doubleMoveRank = sourceRank + direction; // Adjust the calculation
+	    	//} 
+	    		/*else {
+	    			int doubleMoveRank = sourceRank + (2 * direction); // Adjust the calculation
 	    			String doubleMoveSquare = sourceSquare.substring(0, 1) + doubleMoveRank;
 	    			System.out.println("sourceSquare[0]" + sourceSquare.substring(0,1) + "doubleMoveRank: " + doubleMoveRank);
 	    			//System.out.println("Double Move Square: " + doubleMoveSquare);
 	    			if (destinationSquare.equals(doubleMoveSquare)) {
 	    				return true;
 	    			}
-	    	}
-	    	
+	    	}*/
+	   /* } 
+	    else if (sourceFile == destFile && !isSquareOccupied(destinationSquare, piecesOnBoard) && isFirstMove(piece) && Chess.currentPlayer == Chess.Player.black) {
+	    	int doubleMoveRank = sourceRank + (2 * direction); // Adjust the calculation
+			String doubleMoveSquare = sourceSquare.substring(0, 1) + doubleMoveRank;
+			System.out.println("sourceSquare[0]" + sourceSquare.substring(0,1) + "doubleMoveRank: " + doubleMoveRank);
+			//System.out.println("Double Move Square: " + doubleMoveSquare);
+			if (destinationSquare.equals(doubleMoveSquare)) {
+				return true;
+			}
 	    } else {
+	    
 	        if (destRank - sourceRank != direction) {
 	            // Pawn must move forward by one square
 	            System.out.println("Invalid rank difference");
@@ -220,7 +312,7 @@ if (sourceFile == destFile && !isSquareOccupied(destinationSquare, piecesOnBoard
 	                }
 	            }
 	        }
-	    }
+	    }*/
 
 	    // TODO: Add more conditions for special pawn moves like en passant and promotion
 	    return false;
