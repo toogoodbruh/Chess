@@ -113,13 +113,15 @@ public class Chess {
 								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
 								System.out.println("new: " + currentPlayer);
 								result.piecesOnBoard = piecesOnBoard;
+								return result;
 							} else if (MoveValidator.checkBishopMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
-								System.out.println("rook move true in play()");
+								System.out.println("bishop move true in play()");
 								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
 								System.out.println("current: " + currentPlayer);
 								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
 								System.out.println("new: " + currentPlayer);
 								result.piecesOnBoard = piecesOnBoard;
+								return result;
 							} else if (MoveValidator.checkKnightMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
 								System.out.println("rook move true in play()");
 								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
@@ -127,13 +129,28 @@ public class Chess {
 								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
 								System.out.println("new: " + currentPlayer);
 								result.piecesOnBoard = piecesOnBoard;
-							} else if (MoveValidator.checkKingMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
-								System.out.println("rook move true in play()");
-								piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
-								System.out.println("current: " + currentPlayer);
-								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
-								System.out.println("new: " + currentPlayer);
-								result.piecesOnBoard = piecesOnBoard;
+								return result;
+							} //else if (piecesOnBoard.get(i).pieceType == ReturnPiece.PieceType.WK
+									//|| piecesOnBoard.get(i).pieceType == ReturnPiece.PieceType.BK) {
+							else if (MoveValidator.checkKingMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
+								if (MoveValidator.isCastlingMove(sourceSquare, destinationSquare,
+										piecesOnBoard.get(i), piecesOnBoard) == true) {
+									System.out.println("king castling move true in play()");
+									// If king move is valid, process the move
+									piecesOnBoard = MoveValidator.handleCastling(sourceSquare, destinationSquare,
+											piecesOnBoard.get(i), piecesOnBoard);
+									currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+									result.piecesOnBoard = piecesOnBoard;
+									return result;
+								} else {
+									System.out.println("king move true in play()");
+									piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
+									System.out.println("current: " + currentPlayer);
+									currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+									System.out.println("new: " + currentPlayer);
+									result.piecesOnBoard = piecesOnBoard;
+									return result;
+								}
 							} else {
 								result.message = ReturnPlay.Message.ILLEGAL_MOVE;
 								System.out.println("current: " + currentPlayer);
@@ -159,7 +176,7 @@ public class Chess {
 							int rank = piecesOnBoard.get(i).pieceRank;
 							String filerank = file + "" + rank;
 						}
-						
+
 					}
 
 					// Now you have sourceSquare and destinationSquare, you can process the move

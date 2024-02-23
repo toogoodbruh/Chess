@@ -380,7 +380,7 @@ public class MoveValidator {
         return false;
     }
         // Rest of the existing code for standard king move check...
-	private static boolean isCastlingMove(String sourceSquare, String destinationSquare, ReturnPiece king, ArrayList<ReturnPiece> piecesOnBoard) {
+	public static boolean isCastlingMove(String sourceSquare, String destinationSquare, ReturnPiece king, ArrayList<ReturnPiece> piecesOnBoard) {
         int sourceFile = sourceSquare.charAt(0) - 'a';
         int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
 
@@ -405,7 +405,7 @@ public class MoveValidator {
         return false;
     }
 
-	private static boolean handleCastling(String sourceSquare, String destinationSquare, ReturnPiece king, ArrayList<ReturnPiece> piecesOnBoard) {
+	public static ArrayList<ReturnPiece> handleCastling(String sourceSquare, String destinationSquare, ReturnPiece king, ArrayList<ReturnPiece> piecesOnBoard) {
         int sourceFile = sourceSquare.charAt(0) - 'a';
         int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
 
@@ -416,20 +416,20 @@ public class MoveValidator {
         if (king.pieceType == ReturnPiece.PieceType.WK && sourceFile == 4 && sourceRank == 1 && destFile == 6 && destRank == 1) {
             // White kingside castling
             // Move the king
-            processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
+            piecesOnBoard = processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
 
             // Move the kingside rook
             ReturnPiece kingsideRook = findPieceAtSquare("h1", piecesOnBoard, ReturnPiece.PieceType.WR);
-            processRegularMove("h1", "f1", kingsideRook, piecesOnBoard);
+            piecesOnBoard = processRegularMove("h1", "f1", kingsideRook, piecesOnBoard);
 
             // Update flags
             Chess.wKingFlag++;
 
-            return true;
+            return piecesOnBoard;
         } else if (king.pieceType == ReturnPiece.PieceType.BK && sourceFile == 4 && sourceRank == 8 && destFile == 6 && destRank == 8) {
             // Black kingside castling
             // Move the king
-            processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
+            piecesOnBoard = processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
 
             // Move the kingside rook
             ReturnPiece kingsideRook = findPieceAtSquare("h8", piecesOnBoard, ReturnPiece.PieceType.BR);
@@ -438,11 +438,11 @@ public class MoveValidator {
             // Update flags
             Chess.bKingFlag++;
 
-            return true;
+            return piecesOnBoard;
         } else if (king.pieceType == ReturnPiece.PieceType.WK && sourceFile == 4 && sourceRank == 1 && destFile == 2 && destRank == 1) {
             // White queenside castling
             // Move the king
-            processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
+            piecesOnBoard = processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
 
             // Move the queenside rook
             ReturnPiece queensideRook = findPieceAtSquare("a1", piecesOnBoard, ReturnPiece.PieceType.WR);
@@ -451,23 +451,23 @@ public class MoveValidator {
             // Update flags
             Chess.wKingFlag++;
 
-            return true;
+            return piecesOnBoard;
         } else if (king.pieceType == ReturnPiece.PieceType.BK && sourceFile == 4 && sourceRank == 8 && destFile == 2 && destRank == 8) {
             // Black queenside castling
             // Move the king
-            processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
+            piecesOnBoard = processRegularMove(sourceSquare, destinationSquare, king, piecesOnBoard);
 
             // Move the queenside rook
-            ReturnPiece queensideRook = findPieceAtSquare("a8", piecesOnBoard, ReturnPiece.PieceType.BR);
-            processRegularMove("a8", "d8", queensideRook, piecesOnBoard);
+           ReturnPiece queensideRook = findPieceAtSquare("a8", piecesOnBoard, ReturnPiece.PieceType.BR);
+           piecesOnBoard = processRegularMove("a8", "d8", queensideRook, piecesOnBoard);
 
             // Update flags
             Chess.bKingFlag++;
 
-            return true;
+            return piecesOnBoard;
         }
 
-        return false;
+        return piecesOnBoard;
     }
 
 	// Helper method to check if the king has already moved
