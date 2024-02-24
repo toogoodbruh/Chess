@@ -565,20 +565,28 @@ public class MoveValidator {
 	    ReturnPiece pawnToPromote = findPieceAtSquare(sourceSquare, piecesOnBoard, ReturnPiece.PieceType.WP, ReturnPiece.PieceType.BP);
 
 	    // Check if the pawn is found
-	    if (pawnToPromote == null || !pawnToPromote.equals(piece)) {
+	    if (pawnToPromote == null) {
 	        // Pawn not found or does not match the provided piece, illegal promotion
+	    	System.out.println("pawn null");
 	        return false;
+	    }
+	    if (!pawnToPromote.equals(piece)) {
+	    	// Pawn not found or does not match the provided piece, illegal promotion
+	    	System.out.println("pawn does not match piece: " + piece);
+	    	return false;
 	    }
 
 	    // Check if the pawn has reached the promotion rank
 	    int promotionRank = (piece.pieceType == ReturnPiece.PieceType.WP) ? 8 : 1;
-	    if (pawnToPromote.pieceRank != promotionRank) {
+	    int direction = (piece.pieceType == ReturnPiece.PieceType.WP) ? 1 : -1;
+	    if ((pawnToPromote.pieceRank + 1 * direction) != promotionRank) {
+	    	System.out.println("pawn not at promotion rank");
 	        // Pawn has not reached the promotion rank, illegal promotion
 	        return false;
 	    }
 
 	    // Remove the pawn from the board
-	    piecesOnBoard.remove(pawnToPromote);
+	    /*piecesOnBoard.remove(pawnToPromote);
 
 	    // Determine the promotion piece type
 	    ReturnPiece.PieceType promotionType = getPromotionPieceType(promotionPiece, pawnToPromote.pieceType);
@@ -590,13 +598,13 @@ public class MoveValidator {
 	    promotedPiece.pieceRank = Integer.parseInt(destinationSquare.substring(1));
 
 	    // Add the promoted piece to the board
-	    piecesOnBoard.add(promotedPiece);
+	    piecesOnBoard.add(promotedPiece);*/
 
 	    return true;
 	}
 
 
-	public static ArrayList<ReturnPiece> processPawnPromotion(String sourceSquare, String destinationSquare, String promotionPiece, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard){
+	public static ArrayList<ReturnPiece> processPawnPromotion2(String sourceSquare, String destinationSquare, String promotionPiece, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard){
 		// Find the pawn at the source square
 	    ReturnPiece pawnToPromote = findPieceAtSquare(sourceSquare, piecesOnBoard, ReturnPiece.PieceType.WP, ReturnPiece.PieceType.BP);
 
@@ -629,6 +637,29 @@ public class MoveValidator {
 	    piecesOnBoard.add(promotedPiece);
 		return piecesOnBoard;
 	}
+	public static ArrayList<ReturnPiece> processPawnPromotion(String sourceSquare, String destinationSquare, String promotionPiece, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
+	    // Find the pawn at the source square
+	    ReturnPiece pawnToPromote = findPieceAtSquare(sourceSquare, piecesOnBoard, ReturnPiece.PieceType.WP, ReturnPiece.PieceType.BP);
+	    if (checkPawnPromotion(sourceSquare, destinationSquare, promotionPiece, piece, piecesOnBoard)) {
+	    // Remove the pawn from the board
+	    piecesOnBoard.remove(pawnToPromote);
+
+	    // Determine the promotion piece type
+	    ReturnPiece.PieceType promotionType = getPromotionPieceType(promotionPiece, pawnToPromote.pieceType);
+
+	    // Create a new piece of the promotion type at the destination square
+	    ReturnPiece promotedPiece = new ReturnPiece();
+	    promotedPiece.pieceType = promotionType;
+	    promotedPiece.pieceFile = ReturnPiece.PieceFile.valueOf(destinationSquare.substring(0, 1));
+	    promotedPiece.pieceRank = Integer.parseInt(destinationSquare.substring(1));
+
+	    // Add the promoted piece to the board
+	    piecesOnBoard.add(promotedPiece);
+	    }
+	    return piecesOnBoard;
+	    
+	}
+
 
 	// Helper method to find a piece at a specific square with a given type
 	public static ReturnPiece findPieceAtSquare(String square, ArrayList<ReturnPiece> piecesOnBoard, ReturnPiece.PieceType... types) {
