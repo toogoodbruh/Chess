@@ -13,10 +13,12 @@ import chess.ReturnPiece.PieceFile;
 
 public class MoveValidator {
 	private static final boolean DEBUG = false;
-	private static final String WHITETYPE [] = {"WP","WR","WN","WQ", "QK", "WB"};
-	private static final String BLACKTYPE [] = {"BP","BR","BN","BQ", "BK", "BB"};
-	private static  ArrayList<String> white  = new ArrayList<String>();
-	private static  ArrayList<String> black  = new ArrayList<String>();
+	private static final ReturnPiece.PieceType WHITETYPE [] = {ReturnPiece.PieceType.WP, ReturnPiece.PieceType.WB, ReturnPiece.PieceType.WN,
+			ReturnPiece.PieceType.WK, ReturnPiece.PieceType.WQ, ReturnPiece.PieceType.WR};
+	private static final ReturnPiece.PieceType BLACKTYPE [] = {ReturnPiece.PieceType.WP, ReturnPiece.PieceType.WB, ReturnPiece.PieceType.WN,
+			ReturnPiece.PieceType.WK, ReturnPiece.PieceType.WQ, ReturnPiece.PieceType.WR};
+	private static  ArrayList<ReturnPiece.PieceType> white  = new ArrayList<ReturnPiece.PieceType>();
+	private static  ArrayList<ReturnPiece.PieceType> black  = new ArrayList<ReturnPiece.PieceType>();
 	
 	public static void setWHITEBLACK() {
 		for (int a = 0; a < WHITETYPE.length; a++) {
@@ -506,7 +508,7 @@ public class MoveValidator {
 		}
 
 		// Check for en passant
-		if (isEnPassantMove(sourceSquare, destinationSquare, piecesOnBoard)) {
+		if (isEnPassantMove(sourceSquare, destinationSquare, piecesOnBoard, Chess.lastMove)) {
 			return true;
 		}
 
@@ -550,7 +552,7 @@ public class MoveValidator {
 
 		return false;
 	}
-	private static boolean isEnPassantMove(String sourceSquare, String destinationSquare, ArrayList<ReturnPiece> piecesOnBoard) {
+	private static boolean isEnPassantMove2(String sourceSquare, String destinationSquare, ArrayList<ReturnPiece> piecesOnBoard) {
 	    System.out.println("isEnPassantMove method");
 	    int sourceFile = sourceSquare.charAt(0) - 'a';
 	    int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
@@ -576,6 +578,46 @@ public class MoveValidator {
 	            if (piece.pieceType == ReturnPiece.PieceType.WP || piece.pieceType == ReturnPiece.PieceType.BP) {
 	                if (piece.pieceFile.toString().equals(enPassantCaptureSquare.substring(0, 1))
 	                        && piece.pieceRank == Character.getNumericValue(enPassantCaptureSquare.charAt(1))) {
+	                    // En passant capture is valid, remove the captured pawn from the board
+	                    piecesOnBoard.remove(piece);
+	                    return true;
+	                }
+	            }
+	        }
+	    }
+
+	    return false;
+	}
+
+	private static boolean isEnPassantMove(String sourceSquare, String destinationSquare, ArrayList<ReturnPiece> piecesOnBoard, String lastMove) {
+	    int sourceFile = sourceSquare.charAt(0) - 'a';
+	    int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
+
+	    int destFile = destinationSquare.charAt(0) - 'a';
+	    int destRank = Character.getNumericValue(destinationSquare.charAt(1));
+
+	    // Check if the move is diagonal and one square away
+	    if (Math.abs(destFile - sourceFile) == 1 && Math.abs(destRank - sourceRank) == 1) {
+	        // Check for en passant conditions
+	        // En passant capture can occur if there is a pawn next to the destination square
+
+	        // Determine the potential en passant capture square
+	        String enPassantCaptureSquare;
+	        if (Chess.currentPlayer == Player.white) {
+	            enPassantCaptureSquare = "" + (char) ('a' + destFile) + (destRank - 1);
+	        } else {
+	            enPassantCaptureSquare = "" + (char) ('a' + destFile) + (destRank + 1);
+	        }
+
+	        // Check if there is a pawn at the en passant capture square
+	        for (ReturnPiece piece : piecesOnBoard) {
+	            if ((piece.pieceType == ReturnPiece.PieceType.WP || piece.pieceType == ReturnPiece.PieceType.BP) &&
+	                    piece.pieceFile == ReturnPiece.PieceFile.valueOf(enPassantCaptureSquare.substring(0, 1).toLowerCase()) &&
+	                    piece.pieceRank == Character.getNumericValue(enPassantCaptureSquare.charAt(1))) {
+	                // Check if the last move was a double-step pawn move
+	                int oldRank = (Chess.currentPlayer == Player.white) ? (int) Integer.parseInt(enPassantCaptureSquare.substring(1, 2)) + 2 : (int) Integer.parseInt(enPassantCaptureSquare.substring(1, 2)) - 2;
+	                String possiblePawnMove = enPassantCaptureSquare.substring(0, 1) + oldRank + " " + destinationSquare.substring(0, 1) + (destRank - 1);
+	                if (lastMove != null && lastMove.equals(possiblePawnMove)) {
 	                    // En passant capture is valid, remove the captured pawn from the board
 	                    piecesOnBoard.remove(piece);
 	                    return true;
@@ -757,10 +799,12 @@ public class MoveValidator {
 	    // Find the king of the current player
 	    ReturnPiece king = findKing(piecesOnBoard, currentPlayer);
 	    System.out.println("king in isCheck: " + king);
-
+	    ArrayList<ReturnPiece.PieceType> pType = (currentPlayer == Chess.Player.white) ? black : white;
 	    // Check if the opponent's pieces can attack the king's position
 	    for (ReturnPiece opponentPiece : piecesOnBoard) {
-	        if (opponentPiece.pieceType != king.pieceType && isPieceAttackingSquare(opponentPiece, king.pieceFile, king.pieceRank)) {
+	    	ReturnPiece.PieceType oppPieceType = opponentPiece.pieceType;
+	        if (opponentPiece.pieceType != king.pieceType && isPieceAttackingSquare(opponentPiece, king.pieceFile, king.pieceRank)
+	        		&& pType.contains(oppPieceType) == true) {
 	            // The king is in check
 	        	System.out.println("opponent piece in isCheck: " + opponentPiece);
 	            return true;
