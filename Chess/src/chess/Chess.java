@@ -121,6 +121,10 @@ public class Chess {
 				        currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
 				        System.out.println("new: " + currentPlayer);
 				        result.piecesOnBoard = piecesOnBoard;
+				        /*if (MoveValidator.isCheck(piecesOnBoard, currentPlayer) == true) {
+				        	if (DEBUG) System.out.println("check true in manual pawn promotion");
+				        	result.message = ReturnPlay.Message.CHECK;
+				        }*/
 				        return result;
 				    }
 				} else {
@@ -150,6 +154,10 @@ public class Chess {
 										System.out.println("current: " + currentPlayer);
 										currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
 										System.out.println("new: " + currentPlayer);
+										/*if (MoveValidator.isCheck(piecesOnBoard, currentPlayer) == true) {
+								        	if (DEBUG) System.out.println("check true in pawn promotion");
+								        	result.message = ReturnPlay.Message.CHECK;
+								        }*/
 										return result;
 									} else if (MoveValidator.checkPawnMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) {
 										if (DEBUG) System.out.println("pawn move true in play()");
@@ -160,6 +168,10 @@ public class Chess {
 										result.piecesOnBoard = piecesOnBoard;
 										if (drawFlag) result.message = ReturnPlay.Message.DRAW;
 										drawFlag = false;
+										/*if (MoveValidator.isCheck(piecesOnBoard, currentPlayer) == true) {
+								        	if (DEBUG) System.out.println("check true in pawn move");
+								        	result.message = ReturnPlay.Message.CHECK;
+								        }*/
 										return result;
 									}
 									else if (MoveValidator.checkQueenMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) {
@@ -171,6 +183,10 @@ public class Chess {
 										result.piecesOnBoard = piecesOnBoard;
 										if (drawFlag) result.message = ReturnPlay.Message.DRAW;
 										drawFlag = false;
+										/*if (MoveValidator.isCheck(piecesOnBoard, currentPlayer) == true) {
+								        	if (DEBUG) System.out.println("check true in Queen move");
+								        	result.message = ReturnPlay.Message.CHECK;
+								        }*/
 										return result;
 									} else if (MoveValidator.checkRookMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
 										if (DEBUG) System.out.println("rook move true in play()");
@@ -181,6 +197,10 @@ public class Chess {
 										result.piecesOnBoard = piecesOnBoard;
 										if (drawFlag) result.message = ReturnPlay.Message.DRAW;
 										drawFlag = false;
+										/*if (MoveValidator.isCheck(piecesOnBoard, currentPlayer) == true) {
+								        	if (DEBUG) System.out.println("check true in Rook move");
+								        	result.message = ReturnPlay.Message.CHECK;
+								        }*/
 										return result;
 									} else if (MoveValidator.checkBishopMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
 										if (DEBUG) System.out.println("bishop move true in play()");
@@ -191,6 +211,10 @@ public class Chess {
 										result.piecesOnBoard = piecesOnBoard;
 										if (drawFlag) result.message = ReturnPlay.Message.DRAW;
 										drawFlag = false;
+										/*if (MoveValidator.isCheck(piecesOnBoard, currentPlayer) == true) {
+								        	if (DEBUG) System.out.println("check true in Bishop move");
+								        	result.message = ReturnPlay.Message.CHECK;
+								        }*/
 										return result;
 									} else if (MoveValidator.checkKnightMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
 										if (DEBUG) System.out.println("rook move true in play()");
@@ -201,6 +225,10 @@ public class Chess {
 										result.piecesOnBoard = piecesOnBoard;
 										if (drawFlag) result.message = ReturnPlay.Message.DRAW;
 										drawFlag = false;
+										/*if (MoveValidator.isCheck(piecesOnBoard, currentPlayer) == true) {
+								        	if (DEBUG) System.out.println("check true in Knight move");
+								        	result.message = ReturnPlay.Message.CHECK;
+								        }*/
 										return result;
 									} else if (MoveValidator.checkKingMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
 										if (MoveValidator.isCastlingMove(sourceSquare, destinationSquare,
@@ -215,6 +243,10 @@ public class Chess {
 											result.piecesOnBoard = piecesOnBoard;
 											if (drawFlag) result.message = ReturnPlay.Message.DRAW;
 											drawFlag = false;
+											/*if (MoveValidator.isCheck(piecesOnBoard, currentPlayer) == true) {
+									        	if (DEBUG) System.out.println("check true in King castling move");
+									        	result.message = ReturnPlay.Message.CHECK;
+									        }*/
 											return result;
 										} else {
 											if (DEBUG) System.out.println("king move true in play()");
@@ -225,6 +257,10 @@ public class Chess {
 											result.piecesOnBoard = piecesOnBoard;
 											if (drawFlag) result.message = ReturnPlay.Message.DRAW;
 											drawFlag = false;
+											/*if (MoveValidator.isCheck(piecesOnBoard, currentPlayer) == true) {
+									        	if (DEBUG) System.out.println("check true in King move");
+									        	result.message = ReturnPlay.Message.CHECK;
+									        }*/
 											return result;
 										}
 									} else {
@@ -273,6 +309,7 @@ public class Chess {
 		wKingFlag = 0;
 		bKingFlag = 0;
 		drawFlag = false;
+		MoveValidator.setWHITEBLACK();
 	}
 
 	private static ArrayList<ReturnPiece> initialSetup() {

@@ -13,8 +13,17 @@ import chess.ReturnPiece.PieceFile;
 
 public class MoveValidator {
 	private static final boolean DEBUG = false;
-	private final String WHITE [] = {"WP","WR","WN","WQ", "QK", "WB"};
-	private final String BLACK [] = {"BP","BR","BN","BQ", "BK", "BB"};
+	private static final String WHITETYPE [] = {"WP","WR","WN","WQ", "QK", "WB"};
+	private static final String BLACKTYPE [] = {"BP","BR","BN","BQ", "BK", "BB"};
+	private static  ArrayList<String> white  = new ArrayList<String>();
+	private static  ArrayList<String> black  = new ArrayList<String>();
+	
+	public static void setWHITEBLACK() {
+		for (int a = 0; a < WHITETYPE.length; a++) {
+			white.add(WHITETYPE[a]);
+			black.add(BLACKTYPE[a]);
+		}
+	}
 
 	public static ArrayList<ReturnPiece> processRegularMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
 		ArrayList<ReturnPiece> newPiecesOnBoard = new ArrayList<>(piecesOnBoard);
@@ -727,7 +736,7 @@ public class MoveValidator {
 		}
 		return null;
 	}
-	public static boolean isCheck(ArrayList<ReturnPiece> piecesOnBoard, Chess.Player currentPlayer) {
+	public static boolean isCheck1(ArrayList<ReturnPiece> piecesOnBoard, Chess.Player currentPlayer) {
 		// Find the king of the current player
 		ReturnPiece king = findKing(piecesOnBoard, currentPlayer);
 
@@ -744,23 +753,47 @@ public class MoveValidator {
 		// The king is not in check
 		return false;
 	}
+	public static boolean isCheck(ArrayList<ReturnPiece> piecesOnBoard, Chess.Player currentPlayer) {
+	    // Find the king of the current player
+	    ReturnPiece king = findKing(piecesOnBoard, currentPlayer);
+	    System.out.println("king in isCheck: " + king);
+
+	    // Check if the opponent's pieces can attack the king's position
+	    for (ReturnPiece opponentPiece : piecesOnBoard) {
+	        if (opponentPiece.pieceType != king.pieceType && isPieceAttackingSquare(opponentPiece, king.pieceFile, king.pieceRank)) {
+	            // The king is in check
+	        	System.out.println("opponent piece in isCheck: " + opponentPiece);
+	            return true;
+	        }
+
+	        // Special handling for pawns attacking diagonally
+	        if (opponentPiece.pieceType == getOpponentPawnType(currentPlayer) && isPawnAttackingSquare(opponentPiece, king.pieceFile, king.pieceRank)) {
+	            // The king is in check
+	            return true;
+	        }
+	    }
+
+	    // The king is not in check
+	    return false;
+	}
 
 	private static ReturnPiece.PieceType getOpponentPawnType(Chess.Player currentPlayer) {
 	    // Determine the type of pawn for the opponent based on the current player
 	    return (currentPlayer == Chess.Player.white) ? ReturnPiece.PieceType.BP : ReturnPiece.PieceType.WP;
 	}
 
-	private static boolean isPawnAttackingSquare(ReturnPiece pawn, char targetFile, int targetRank) {
+	private static boolean isPawnAttackingSquare(ReturnPiece pawn, ReturnPiece.PieceFile targetFile, int targetRank) {
 	    // Check if the pawn is attacking the specified square diagonally
 	    int pawnRank = pawn.pieceRank;
-	    char pawnFile = pawn.pieceFile.toString().charAt(0);
 
 	    // Determine the direction of pawn attack based on the opponent's position
 	    int rankDifference = (pawn.pieceType == ReturnPiece.PieceType.WP) ? 1 : -1;
 
 	    // Check if the target square is diagonally forward from the pawn
-	    return Math.abs(targetFile - pawnFile) == 1 && targetRank == pawnRank + rankDifference;
+	    return targetFile == pawn.pieceFile && targetRank == pawnRank + rankDifference;
 	}
+
+
 
 	private static ReturnPiece findKing(ArrayList<ReturnPiece> piecesOnBoard, Chess.Player player) {
 	    // Find the king of the specified player
