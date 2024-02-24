@@ -73,7 +73,7 @@ public class MoveValidator {
 	}
 	public static boolean checkBishopMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
 		System.out.println("Checking bishop move from " + sourceSquare + " to " + destinationSquare);
-		if (piece.pieceType != ReturnPiece.PieceType.WB || piece.pieceType != ReturnPiece.PieceType.BB) {
+		if (piece.pieceType != ReturnPiece.PieceType.WB && piece.pieceType != ReturnPiece.PieceType.BB) {
 			System.out.println("piece not bishop sent to checkBishopMove");
 			return false;
 		}
@@ -103,7 +103,7 @@ public class MoveValidator {
 	}
 	public static boolean checkKnightMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
 		System.out.println("Checking knight move from " + sourceSquare + " to " + destinationSquare);
-		if (piece.pieceType != ReturnPiece.PieceType.WN || piece.pieceType != ReturnPiece.PieceType.BN) {
+		if (piece.pieceType != ReturnPiece.PieceType.WN && piece.pieceType != ReturnPiece.PieceType.BN) {
 			System.out.println("king not sent to checkKnightMove");
 			return false;
 		}
@@ -123,7 +123,7 @@ public class MoveValidator {
 
 	public static boolean checkRookMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
 		System.out.println("Checking rook move from " + sourceSquare + " to " + destinationSquare);
-		if (piece.pieceType != ReturnPiece.PieceType.WR || piece.pieceType != ReturnPiece.PieceType.BR) {
+		if (piece.pieceType != ReturnPiece.PieceType.WR && piece.pieceType != ReturnPiece.PieceType.BR) {
 			System.out.println("rook not sent to checkRookMove");
 			return false;
 		}
@@ -174,7 +174,8 @@ public class MoveValidator {
 	}
 	public static boolean checkQueenMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
 	    System.out.println("Checking queen move from " + sourceSquare + " to " + destinationSquare);
-	    if (piece.pieceType != ReturnPiece.PieceType.WQ || piece.pieceType != ReturnPiece.PieceType.BQ) {
+	    if (piece.pieceType != ReturnPiece.PieceType.WQ && piece.pieceType != ReturnPiece.PieceType.BQ) {
+	    	System.out.println("piece sent to checkQueenMove: " + piece);
 			System.out.println("queen not sent to checkQueenMove");
 			return false;
 		}
@@ -202,7 +203,7 @@ public class MoveValidator {
 	}
 
 	public static boolean checkKingMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
-		if (piece.pieceType != ReturnPiece.PieceType.WK || piece.pieceType != ReturnPiece.PieceType.BK) {
+		if (piece.pieceType != ReturnPiece.PieceType.WK && piece.pieceType != ReturnPiece.PieceType.BK) {
 			System.out.println("king not sent to checkKingMove");
 			return false;
 		}
