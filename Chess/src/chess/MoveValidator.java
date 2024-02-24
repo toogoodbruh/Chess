@@ -73,7 +73,10 @@ public class MoveValidator {
 	}
 	public static boolean checkBishopMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
 		System.out.println("Checking bishop move from " + sourceSquare + " to " + destinationSquare);
-
+		if (piece.pieceType != ReturnPiece.PieceType.WB || piece.pieceType != ReturnPiece.PieceType.BB) {
+			System.out.println("piece not bishop sent to checkBishopMove");
+			return false;
+		}
 		// Check if the move is diagonal
 		if (isDiagonalMove(sourceSquare, destinationSquare)) {
 			// Check if the path is clear (no pieces in the way)
@@ -100,7 +103,10 @@ public class MoveValidator {
 	}
 	public static boolean checkKnightMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
 		System.out.println("Checking knight move from " + sourceSquare + " to " + destinationSquare);
-
+		if (piece.pieceType != ReturnPiece.PieceType.WN || piece.pieceType != ReturnPiece.PieceType.BN) {
+			System.out.println("king not sent to checkKnightMove");
+			return false;
+		}
 		int sourceFile = sourceSquare.charAt(0) - 'a';
 		int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
 
@@ -117,7 +123,10 @@ public class MoveValidator {
 
 	public static boolean checkRookMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
 		System.out.println("Checking rook move from " + sourceSquare + " to " + destinationSquare);
-
+		if (piece.pieceType != ReturnPiece.PieceType.WR || piece.pieceType != ReturnPiece.PieceType.BR) {
+			System.out.println("rook not sent to checkRookMove");
+			return false;
+		}
 		// Check if the move is either vertical or horizontal
 		boolean isVerticalMove = sourceSquare.charAt(0) == destinationSquare.charAt(0);
 		boolean isHorizontalMove = sourceSquare.charAt(1) == destinationSquare.charAt(1);
@@ -165,7 +174,10 @@ public class MoveValidator {
 	}
 	public static boolean checkQueenMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
 	    System.out.println("Checking queen move from " + sourceSquare + " to " + destinationSquare);
-
+	    if (piece.pieceType != ReturnPiece.PieceType.WQ || piece.pieceType != ReturnPiece.PieceType.BQ) {
+			System.out.println("queen not sent to checkQueenMove");
+			return false;
+		}
 	    // Check if the move is either vertical, horizontal, or diagonal
 	    boolean isVerticalMove = sourceSquare.charAt(0) == destinationSquare.charAt(0);
 	    boolean isHorizontalMove = sourceSquare.charAt(1) == destinationSquare.charAt(1);
@@ -190,6 +202,10 @@ public class MoveValidator {
 	}
 
 	public static boolean checkKingMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
+		if (piece.pieceType != ReturnPiece.PieceType.WK || piece.pieceType != ReturnPiece.PieceType.BK) {
+			System.out.println("king not sent to checkKingMove");
+			return false;
+		}
 		// Check if it's a castling move
 		if (isCastlingMove(sourceSquare, destinationSquare, piece, piecesOnBoard)) {
 			// Implement logic for castling
@@ -432,6 +448,7 @@ public class MoveValidator {
 
 		if (piece.pieceType != ReturnPiece.PieceType.WP && piece.pieceType != ReturnPiece.PieceType.BP) {
 			// Not a pawn
+			System.out.println("piece not pawn sent to checkPawnMove");
 			return false;
 		}
 		System.out.println("piece: " + piece);
@@ -487,7 +504,7 @@ public class MoveValidator {
 		return false;
 	}
 
-	private static boolean isEnPassantMove(String sourceSquare, String destinationSquare, ArrayList<ReturnPiece> piecesOnBoard) {
+	private static boolean isEnPassantMove1(String sourceSquare, String destinationSquare, ArrayList<ReturnPiece> piecesOnBoard) {
 		System.out.println("isEnPassantMove method");
 		int sourceFile = sourceSquare.charAt(0) - 'a';
 		int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
@@ -523,6 +540,43 @@ public class MoveValidator {
 
 		return false;
 	}
+	private static boolean isEnPassantMove(String sourceSquare, String destinationSquare, ArrayList<ReturnPiece> piecesOnBoard) {
+	    System.out.println("isEnPassantMove method");
+	    int sourceFile = sourceSquare.charAt(0) - 'a';
+	    int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
+
+	    int destFile = destinationSquare.charAt(0) - 'a';
+	    int destRank = Character.getNumericValue(destinationSquare.charAt(1));
+
+	    // Check if the move is a two-step advance
+	    if (Math.abs(destFile - sourceFile) == 0 && Math.abs(destRank - sourceRank) == 2) {
+	        // Check for en passant conditions
+	        // En passant capture can occur if there is a pawn next to the destination square
+
+	        // Determine the potential en passant capture square
+	        String enPassantCaptureSquare;
+	        if (Chess.currentPlayer == Player.white) {
+	            enPassantCaptureSquare = "" + (char) ('a' + destFile) + (destRank - 1);
+	        } else {
+	            enPassantCaptureSquare = "" + (char) ('a' + destFile) + (destRank + 1);
+	        }
+
+	        // Check if there is a pawn at the en passant capture square
+	        for (ReturnPiece piece : piecesOnBoard) {
+	            if (piece.pieceType == ReturnPiece.PieceType.WP || piece.pieceType == ReturnPiece.PieceType.BP) {
+	                if (piece.pieceFile.toString().equals(enPassantCaptureSquare.substring(0, 1))
+	                        && piece.pieceRank == Character.getNumericValue(enPassantCaptureSquare.charAt(1))) {
+	                    // En passant capture is valid, remove the captured pawn from the board
+	                    piecesOnBoard.remove(piece);
+	                    return true;
+	                }
+	            }
+	        }
+	    }
+
+	    return false;
+	}
+
 
 
 	private static boolean isFirstMove(ReturnPiece piece) {
