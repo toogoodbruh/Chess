@@ -98,43 +98,6 @@ public class Chess {
 				String originalSourceSquare = sourceSquare;
 				String originalDestinationSquare = destinationSquare;
 				// Check for pawn promotion
-				/*if (moveParts.length == 3) {
-					String promotionPiece = moveParts[2];
-					if (isValidSquare(sourceSquare) && isValidSquare(destinationSquare)) {
-						for (ReturnPiece piece : piecesOnBoard) {
-							if (piece.pieceFile.toString().equals(sourceSquare.substring(0, 1))
-									&& piece.pieceRank == Character.getNumericValue(sourceSquare.charAt(1))
-									&& piece.pieceType == ReturnPiece.PieceType.WP) {
-								if (MoveValidator.checkPawnMove(sourceSquare, destinationSquare, piece, piecesOnBoard)
-										&& MoveValidator.checkPawnPromotion(sourceSquare, destinationSquare, promotionPiece, piece, piecesOnBoard)) {
-									piecesOnBoard = MoveValidator.processPawnPromotion(sourceSquare, destinationSquare, promotionPiece, piece, piecesOnBoard);
-									System.out.println("current: " + currentPlayer);
-									currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
-									System.out.println("new: " + currentPlayer);
-									result.piecesOnBoard = piecesOnBoard;
-									return result;
-								} else {
-									result.message = ReturnPlay.Message.ILLEGAL_MOVE;
-									System.out.println("current: " + currentPlayer);
-									currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
-									System.out.println("new: " + currentPlayer);
-									return result;
-								}
-							}
-						}
-					} else if (moveParts[2].equalsIgnoreCase("draw?") == true) {
-						if (DEBUG) System.out.println("draw found");
-						drawFlag = true;
-						String sendString = originalSourceSquare + " " + originalDestinationSquare;
-						result = Chess.play(sendString);
-						result.message = ReturnPlay.Message.DRAW;
-
-						return result;
-					} else {
-						result.message = ReturnPlay.Message.ILLEGAL_MOVE;
-						return result;
-					}
-				}*/ 
 				String promotionPiece = "";
 				ReturnPiece piece = null;
 				// Check for draw offer
@@ -161,10 +124,6 @@ public class Chess {
 				        return result;
 				    }
 				} else {
-						/*if (!isValidSquare(sourceSquare) || !isValidSquare(destinationSquare)) {
-					result.message = ReturnPlay.Message.ILLEGAL_MOVE;
-					return result;
-				} else {*/
 						//piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(1), piecesOnBoard);
 						for (int i = 0; i < piecesOnBoard.size(); i++) {
 							char file = piecesOnBoard.get(i).pieceFile.toString().charAt(0);
@@ -177,31 +136,10 @@ public class Chess {
 								drawFlag = true;
 								String sendString = originalSourceSquare + " " + originalDestinationSquare;
 								result = Chess.play(sendString);
-								result.message = ReturnPlay.Message.DRAW;
+								result.message = ReturnPlay.Message.DRAW;								
 								currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
 								return result;
-							}/*else {
-								if (moveParts.length == 3) {
-									String promotionPiece = moveParts[2];
-									if (sourceSquare.equals(filerank) && sourceSquare.charAt(1) == filerank.charAt(1)) {
-										if (MoveValidator.checkPawnMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true 
-												&& MoveValidator.checkPawnPromotion(sourceSquare, destinationSquare, promotionPiece, piecesOnBoard.get(i), piecesOnBoard) == true) {
-											if (DEBUG) System.out.println("pawn promotion true in play() specified piece: " + promotionPiece);
-											//piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
-											piecesOnBoard = MoveValidator.processPawnPromotion(sourceSquare, destinationSquare, promotionPiece, piecesOnBoard.get(i), piecesOnBoard);
-											System.out.println("current: " + currentPlayer);
-											currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
-											System.out.println("new: " + currentPlayer);
-											result.piecesOnBoard = piecesOnBoard;
-											return result;
-										}
-										else {
-											result.message = ReturnPlay.Message.ILLEGAL_MOVE;
-											return result;
-										}
-									}
-								}
-							}*/
+							}
 							else {
 								if (sourceSquare.equals(filerank) && sourceSquare.charAt(1) == filerank.charAt(1) && moveParts.length == 2) {
 									if (MoveValidator.checkPawnPromotion(sourceSquare, destinationSquare, "Q", piecesOnBoard.get(i), piecesOnBoard) == true) {
@@ -271,7 +209,9 @@ public class Chess {
 											// If king move is valid, process the move
 											piecesOnBoard = MoveValidator.handleCastling(sourceSquare, destinationSquare,
 													piecesOnBoard.get(i), piecesOnBoard);
+											System.out.println("current: " + currentPlayer);
 											currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+											System.out.println("new: " + currentPlayer);
 											result.piecesOnBoard = piecesOnBoard;
 											if (drawFlag) result.message = ReturnPlay.Message.DRAW;
 											drawFlag = false;
@@ -293,55 +233,10 @@ public class Chess {
 										currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
 										System.out.println("new: " + currentPlayer);
 										return result;
-									}
-									//piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
-									//break;
-									//return result;
-								}
-								//}
-							}
-						}
-
-
-
-
-						// Additional handling for pawn promotion
-						/*if (moveParts.length == 3) {
-						String promotionPiece = moveParts[2];
-						// Handle promotionPiece (e.g., "N" for knight, "Q" for queen, etc.)
-						for (int i = 0; i < piecesOnBoard.size(); i++) {
-							char file = piecesOnBoard.get(i).pieceFile.toString().charAt(0);
-							int rank = piecesOnBoard.get(i).pieceRank;
-							String filerank = file + "" + rank;
-							if (sourceSquare.equals(filerank) && sourceSquare.charAt(1) == filerank.charAt(1)) {
-								if (MoveValidator.checkPawnMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true 
-										&& MoveValidator.processPawnPromotion(sourceSquare, destinationSquare, promotionPiece, piecesOnBoard.get(i), piecesOnBoard)) {
-									if (DEBUG) System.out.println("pawn promotion true in play() specified piece: " + promotionPiece);
-									piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
-									System.out.println("current: " + currentPlayer);
-									currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
-									System.out.println("new: " + currentPlayer);
-									result.piecesOnBoard = piecesOnBoard;
-									return result;
+									}									
 								}
 							}
 						}
-
-					}*/
-
-						// Now you have sourceSquare and destinationSquare, you can process the move
-						// Example: result.piecesOnBoard = processRegularMove(sourceSquare,
-						// destinationSquare);
-						/*else if (moveParts.length == 3 && moveParts[2].equals("draw?")) {
-						// Draw offer
-						sourceSquare = moveParts[0];
-						destinationSquare = moveParts[1];
-						// Example: result.piecesOnBoard = processDrawOffer(sourceSquare,
-						// destinationSquare);
-						//result.message = ReturnPlay.Message.DRAW;
-						drawFlag = true;
-						Chess.play(sourceSquare + " " + destinationSquare);
-					}*/ 
 					}
 
 			} else if (moveParts.length == 1 && moveParts[0].equals("resign")) {

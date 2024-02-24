@@ -690,7 +690,39 @@ public class MoveValidator {
 		return false;
 	}
 
+	private static ReturnPiece.PieceType getOpponentPawnType(Chess.Player currentPlayer) {
+	    // Determine the type of pawn for the opponent based on the current player
+	    return (currentPlayer == Chess.Player.white) ? ReturnPiece.PieceType.BP : ReturnPiece.PieceType.WP;
+	}
+
+	private static boolean isPawnAttackingSquare(ReturnPiece pawn, char targetFile, int targetRank) {
+	    // Check if the pawn is attacking the specified square diagonally
+	    int pawnRank = pawn.pieceRank;
+	    char pawnFile = pawn.pieceFile.toString().charAt(0);
+
+	    // Determine the direction of pawn attack based on the opponent's position
+	    int rankDifference = (pawn.pieceType == ReturnPiece.PieceType.WP) ? 1 : -1;
+
+	    // Check if the target square is diagonally forward from the pawn
+	    return Math.abs(targetFile - pawnFile) == 1 && targetRank == pawnRank + rankDifference;
+	}
+
 	private static ReturnPiece findKing(ArrayList<ReturnPiece> piecesOnBoard, Chess.Player player) {
+	    // Find the king of the specified player
+	    ReturnPiece.PieceType kingType = (player == Chess.Player.white) ? ReturnPiece.PieceType.WK : ReturnPiece.PieceType.BK;
+
+	    for (ReturnPiece piece : piecesOnBoard) {
+	        if (piece.pieceType == kingType) {
+	            return piece;
+	        }
+	    }
+
+	    // King not found
+	    throw new RuntimeException("King not found for player: " + player);
+	    // Alternatively, return null or another special value to indicate an error
+	}
+
+	private static ReturnPiece findKing1(ArrayList<ReturnPiece> piecesOnBoard, Chess.Player player) {
 		// Find the king of the specified player
 		ReturnPiece.PieceType kingType = (player == Chess.Player.white) ? ReturnPiece.PieceType.WK : ReturnPiece.PieceType.BK;
 
