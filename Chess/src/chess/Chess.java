@@ -126,6 +126,9 @@ public class Chess {
 				        	if (DEBUG) System.out.println("check true in manual pawn promotion");
 				        	result.message = ReturnPlay.Message.CHECK;
 				        }
+				        if (MoveValidator.isCheckAndCheckmate(originalSourceSquare, originalDestinationSquare, piecesOnBoard, currentPlayer)) {
+				        	result.message = (currentPlayer == Player.white) ? ReturnPlay.Message.CHECKMATE_BLACK_WINS : ReturnPlay.Message.CHECKMATE_WHITE_WINS;
+				        }
 				        lastMove = moveParts[0] + " " + moveParts[1];
 				        return result;
 				    }
@@ -161,6 +164,9 @@ public class Chess {
 								        	if (DEBUG) System.out.println("check true in pawn promotion");
 								        	result.message = ReturnPlay.Message.CHECK;
 								        }
+										if (MoveValidator.isCheckAndCheckmate(originalSourceSquare, originalDestinationSquare, piecesOnBoard, currentPlayer)) {
+								        	result.message = (currentPlayer == Player.white) ? ReturnPlay.Message.CHECKMATE_BLACK_WINS : ReturnPlay.Message.CHECKMATE_WHITE_WINS;
+								        }
 										lastMove = moveParts[0] + " " + moveParts[1];
 										return result;
 									} else if (MoveValidator.checkPawnMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) {
@@ -175,6 +181,9 @@ public class Chess {
 										if (MoveValidator.isCheck(piecesOnBoard, currentPlayer) == true) {
 								        	if (DEBUG) System.out.println("check true in pawn move");
 								        	result.message = ReturnPlay.Message.CHECK;
+								        }
+										if (MoveValidator.isCheckAndCheckmate(originalSourceSquare, originalDestinationSquare, piecesOnBoard, currentPlayer)) {
+								        	result.message = (currentPlayer == Player.white) ? ReturnPlay.Message.CHECKMATE_BLACK_WINS : ReturnPlay.Message.CHECKMATE_WHITE_WINS;
 								        }
 										lastMove = moveParts[0] + " " + moveParts[1];
 										return result;
@@ -192,6 +201,9 @@ public class Chess {
 								        	if (DEBUG) System.out.println("check true in Queen move");
 								        	result.message = ReturnPlay.Message.CHECK;
 								        }
+										if (MoveValidator.isCheckAndCheckmate(originalSourceSquare, originalDestinationSquare, piecesOnBoard, currentPlayer)) {
+								        	result.message = (currentPlayer == Player.white) ? ReturnPlay.Message.CHECKMATE_BLACK_WINS : ReturnPlay.Message.CHECKMATE_WHITE_WINS;
+								        }
 										lastMove = moveParts[0] + " " + moveParts[1];
 										return result;
 									} else if (MoveValidator.checkRookMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
@@ -206,6 +218,9 @@ public class Chess {
 										if (MoveValidator.isCheck(piecesOnBoard, currentPlayer) == true) {
 								        	if (DEBUG) System.out.println("check true in Rook move");
 								        	result.message = ReturnPlay.Message.CHECK;
+								        }
+										if (MoveValidator.isCheckAndCheckmate(originalSourceSquare, originalDestinationSquare, piecesOnBoard, currentPlayer)) {
+								        	result.message = (currentPlayer == Player.white) ? ReturnPlay.Message.CHECKMATE_BLACK_WINS : ReturnPlay.Message.CHECKMATE_WHITE_WINS;
 								        }
 										lastMove = moveParts[0] + " " + moveParts[1];
 										return result;
@@ -222,6 +237,9 @@ public class Chess {
 								        	if (DEBUG) System.out.println("check true in Bishop move");
 								        	result.message = ReturnPlay.Message.CHECK;
 								        }
+										if (MoveValidator.isCheckAndCheckmate(originalSourceSquare, originalDestinationSquare, piecesOnBoard, currentPlayer)) {
+								        	result.message = (currentPlayer == Player.white) ? ReturnPlay.Message.CHECKMATE_BLACK_WINS : ReturnPlay.Message.CHECKMATE_WHITE_WINS;
+								        }
 										lastMove = moveParts[0] + " " + moveParts[1];
 										return result;
 									} else if (MoveValidator.checkKnightMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
@@ -237,9 +255,14 @@ public class Chess {
 								        	if (DEBUG) System.out.println("check true in Knight move");
 								        	result.message = ReturnPlay.Message.CHECK;
 								        }
+										if (MoveValidator.isCheckAndCheckmate(originalSourceSquare, originalDestinationSquare, piecesOnBoard, currentPlayer)) {
+								        	result.message = (currentPlayer == Player.white) ? ReturnPlay.Message.CHECKMATE_BLACK_WINS : ReturnPlay.Message.CHECKMATE_WHITE_WINS;
+								        }
 										lastMove = moveParts[0] + " " + moveParts[1];
 										return result;
-									} else if (MoveValidator.checkKingMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
+									} //else if (MoveValidator.checkKingMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) { 
+									else if (MoveValidator.isCastlingMove(sourceSquare, destinationSquare,
+											piecesOnBoard.get(i), piecesOnBoard) == true) {
 										if (MoveValidator.isCastlingMove(sourceSquare, destinationSquare,
 												piecesOnBoard.get(i), piecesOnBoard) == true) {
 											if (DEBUG) System.out.println("king castling move true in play()");
@@ -256,9 +279,13 @@ public class Chess {
 									        	if (DEBUG) System.out.println("check true in King castling move");
 									        	result.message = ReturnPlay.Message.CHECK;
 									        }
+											if (MoveValidator.isCheckAndCheckmate(originalSourceSquare, originalDestinationSquare, piecesOnBoard, currentPlayer)) {
+									        	result.message = (currentPlayer == Player.white) ? ReturnPlay.Message.CHECKMATE_BLACK_WINS : ReturnPlay.Message.CHECKMATE_WHITE_WINS;
+									        }
 											lastMove = moveParts[0] + " " + moveParts[1];
 											return result;
-										} else {
+										}
+										else if (MoveValidator.checkKingMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) {
 											if (DEBUG) System.out.println("king move true in play()");
 											piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
 											System.out.println("current: " + currentPlayer);
@@ -271,9 +298,30 @@ public class Chess {
 									        	if (DEBUG) System.out.println("check true in King move");
 									        	result.message = ReturnPlay.Message.CHECK;
 									        }
+											if (MoveValidator.isCheckAndCheckmate(originalSourceSquare, originalDestinationSquare, piecesOnBoard, currentPlayer)) {
+									        	result.message = (currentPlayer == Player.white) ? ReturnPlay.Message.CHECKMATE_BLACK_WINS : ReturnPlay.Message.CHECKMATE_WHITE_WINS;
+									        }
 											lastMove = moveParts[0] + " " + moveParts[1];
 											return result;
 										}
+									} else if (MoveValidator.checkKingMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard) == true) {
+										if (DEBUG) System.out.println("king move true in play()");
+										piecesOnBoard = MoveValidator.processRegularMove(sourceSquare, destinationSquare, piecesOnBoard.get(i), piecesOnBoard);
+										System.out.println("current: " + currentPlayer);
+										currentPlayer = (currentPlayer == Player.white) ? Player.black : Player.white;
+										System.out.println("new: " + currentPlayer);
+										result.piecesOnBoard = piecesOnBoard;
+										if (drawFlag) result.message = ReturnPlay.Message.DRAW;
+										drawFlag = false;
+										if (MoveValidator.isCheck(piecesOnBoard, currentPlayer) == true) {
+								        	if (DEBUG) System.out.println("check true in King move");
+								        	result.message = ReturnPlay.Message.CHECK;
+								        }
+										if (MoveValidator.isCheckAndCheckmate(originalSourceSquare, originalDestinationSquare, piecesOnBoard, currentPlayer)) {
+								        	result.message = (currentPlayer == Player.white) ? ReturnPlay.Message.CHECKMATE_BLACK_WINS : ReturnPlay.Message.CHECKMATE_WHITE_WINS;
+								        }
+										lastMove = moveParts[0] + " " + moveParts[1];
+										return result;
 									} else {
 										result.message = ReturnPlay.Message.ILLEGAL_MOVE;
 										System.out.println("current: " + currentPlayer);
@@ -401,13 +449,13 @@ public class Chess {
 		a.pieceFile = ReturnPiece.PieceFile.f;
 		a.pieceRank = 1;
 		initialPieces.add(a);
-		//BB 1
+		// BB 1
 		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.BB;
 		a.pieceFile = ReturnPiece.PieceFile.c;
 		a.pieceRank = 8;
 		initialPieces.add(a);
-		//BB 2
+		// BB 2
 		a = new ReturnPiece();
 		a.pieceType = ReturnPiece.PieceType.BB;
 		a.pieceFile = ReturnPiece.PieceFile.f;

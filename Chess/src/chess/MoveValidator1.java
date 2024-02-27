@@ -11,7 +11,7 @@ import java.util.Arrays;
 import chess.Chess.Player;
 import chess.ReturnPiece.PieceFile;
 
-public class MoveValidator {
+public class MoveValidator1 {
 	private static final boolean DEBUG = false;
 	private static final ReturnPiece.PieceType WHITETYPE [] = {ReturnPiece.PieceType.WP, ReturnPiece.PieceType.WB, ReturnPiece.PieceType.WN,
 			ReturnPiece.PieceType.WK, ReturnPiece.PieceType.WQ, ReturnPiece.PieceType.WR};
@@ -82,6 +82,23 @@ public class MoveValidator {
 
 		return newPiecesOnBoard;
 	}
+	public static boolean checkBishopMove1(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
+	    System.out.println("Checking bishop move from " + sourceSquare + " to " + destinationSquare);
+	    if (piece.pieceType != ReturnPiece.PieceType.WB && piece.pieceType != ReturnPiece.PieceType.BB) {
+	        System.out.println("piece not bishop sent to checkBishopMove");
+	        return false;
+	    }
+	    
+	    // Check if the move is diagonal and the path is clear
+	    if (isDiagonalMove(sourceSquare, destinationSquare) && !isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard)) {
+	        // Check if the destination square is unoccupied or has an opponent's piece
+	        if (!isSquareOccupiedBySameColor(destinationSquare, piece.pieceType, piecesOnBoard)) {
+	            return true; // Valid bishop move
+	        }
+	    }
+
+	    return false;
+	}
 	public static boolean checkBishopMove(String sourceSquare, String destinationSquare, ReturnPiece piece, ArrayList<ReturnPiece> piecesOnBoard) {
 		System.out.println("Checking bishop move from " + sourceSquare + " to " + destinationSquare);
 		if (piece.pieceType != ReturnPiece.PieceType.WB && piece.pieceType != ReturnPiece.PieceType.BB) {
@@ -89,15 +106,17 @@ public class MoveValidator {
 			return false;
 		}
 		// Check if the move is diagonal
+		// Check if the move is diagonal
 		if (isDiagonalMove(sourceSquare, destinationSquare)) {
-			// Check if the path is clear (no pieces in the way)
-			if (!isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard)) {
-				// Check if the destination square is unoccupied or has an opponent's piece
-				if (!isSquareOccupiedBySameColor(destinationSquare, piece.pieceType, piecesOnBoard)) {
-					return true; // Valid bishop move
-				}
-			}
+		    // Check if the path is clear (no pieces in the way)
+		    if (!isPathOccupied(sourceSquare, destinationSquare, piecesOnBoard)) {
+		        // Check if the destination square is unoccupied or has an opponent's piece
+		        if (!isSquareOccupiedBySameColor(destinationSquare, piece.pieceType, piecesOnBoard)) {
+		            return true; // Valid bishop move
+		        }
+		    }
 		}
+
 
 		return false;
 	}
@@ -369,8 +388,33 @@ public class MoveValidator {
 		}
 		return false;
 	}
-
 	private static boolean isPathOccupied(String sourceSquare, String destinationSquare, ArrayList<ReturnPiece> piecesOnBoard) {
+	    int sourceFile = sourceSquare.charAt(0) - 'a';
+	    int sourceRank = Character.getNumericValue(sourceSquare.charAt(1));
+	    int destFile = destinationSquare.charAt(0) - 'a';
+	    int destRank = Character.getNumericValue(destinationSquare.charAt(1));
+
+	    int fileStep = Integer.compare(destFile, sourceFile);
+	    int rankStep = Integer.compare(destRank, sourceRank);
+
+	    int currentFile = sourceFile + fileStep;
+	    int currentRank = sourceRank + rankStep;
+
+	    while (currentFile != destFile || currentRank != destRank) {
+	        String currentSquare = "" + (char) ('a' + currentFile) + currentRank;
+	        if (isSquareOccupied(currentSquare, piecesOnBoard)) {
+	            return true; // Path is occupied
+	        }
+	        currentFile += fileStep;
+	        currentRank += rankStep;
+	    }
+
+	    return false; // Path is not occupied
+	}
+
+
+
+	private static boolean isPathOccupied_Og(String sourceSquare, String destinationSquare, ArrayList<ReturnPiece> piecesOnBoard) {
 	    ReturnPiece piece = findPieceAtSquare(sourceSquare, piecesOnBoard);
 
 	    int sourceFile = sourceSquare.charAt(0) - 'a';
@@ -778,240 +822,24 @@ public class MoveValidator {
 		}
 		return null;
 	}
-
 	public static boolean isCheck1(ArrayList<ReturnPiece> piecesOnBoard, Chess.Player currentPlayer) {
-	    // Find the king of the current player
-	    ReturnPiece king = findKing(piecesOnBoard, currentPlayer);
-	    System.out.println("king in isCheck: " + king);
-	    ArrayList<ReturnPiece.PieceType> pType = (currentPlayer == Chess.Player.white) ? black : white;
-	    // Check if the opponent's pieces can attack the king's position
-	    for (ReturnPiece opponentPiece : piecesOnBoard) {
-	    	ReturnPiece.PieceType oppPieceType = opponentPiece.pieceType;
-	        if (opponentPiece.pieceType != king.pieceType && isPieceAttackingSquare(opponentPiece, king.pieceFile, king.pieceRank)
-	        		&& pType.contains(oppPieceType) == true) {
-	            // The king is in check
-	        	System.out.println("opponent piece in isCheck: " + opponentPiece);
-	            return true;
-	        }
+		// Find the king of the current player
+		ReturnPiece king = findKing(piecesOnBoard, currentPlayer);
 
-	        // Special handling for pawns attacking diagonally
-	        if (opponentPiece.pieceType == getOpponentPawnType(currentPlayer) && isPawnAttackingSquare(opponentPiece, king.pieceFile, king.pieceRank)) {
-	            // The king is in check
-	            return true;
-	        }
-	    }
-
-	    // The king is not in check
-	    return false;
-	}
-	public static boolean isCheck(ArrayList<ReturnPiece> piecesOnBoard, Chess.Player currentPlayer) {
-	    // Find the king of the current player
-	    ReturnPiece king = findKing(piecesOnBoard, currentPlayer);
-	    System.out.println("king in isCheck: " + king);
-	    ArrayList<ReturnPiece.PieceType> pType = (currentPlayer == Chess.Player.white) ? black : white;
-
-	    // Check if the opponent's pieces can attack the king's position
-	    for (ReturnPiece opponentPiece : piecesOnBoard) {
-	        ReturnPiece.PieceType oppPieceType = opponentPiece.pieceType;
-
-	        if (opponentPiece.pieceType != king.pieceType && isPieceAttackingSquare(opponentPiece, king.pieceFile, king.pieceRank, piecesOnBoard)) {
-	            // The king is in check
-	            System.out.println("opponent piece in isCheck: " + opponentPiece);
-	            return true;
-	        }
-
-	        // Special handling for pawns attacking diagonally
-	        if (opponentPiece.pieceType == getOpponentPawnType(currentPlayer) && isPawnAttackingSquare(opponentPiece, king.pieceFile, king.pieceRank)) {
-	            // The king is in check
-	            System.out.println("Pawn attacking square: " + opponentPiece);
-	            return true;
-	        }
-	    }
-
-	    // The king is not in check
-	    return false;
-	}
-
-	private static ReturnPiece.PieceType getOpponentPawnType(Chess.Player currentPlayer) {
-	    // Determine the type of pawn for the opponent based on the current player
-	    return (currentPlayer == Chess.Player.white) ? ReturnPiece.PieceType.BP : ReturnPiece.PieceType.WP;
-	}
-
-	private static boolean isPawnAttackingSquare(ReturnPiece pawn, ReturnPiece.PieceFile targetFile, int targetRank) {
-	    // Check if the pawn is attacking the specified square diagonally
-	    int pawnRank = pawn.pieceRank;
-
-	    // Determine the direction of pawn attack based on the opponent's position
-	    int rankDifference = (pawn.pieceType == ReturnPiece.PieceType.WP) ? 1 : -1;
-
-	    // Check if the target square is diagonally forward from the pawn
-	    return targetFile == pawn.pieceFile && targetRank == pawnRank + rankDifference;
-	}
-
-
-
-	private static ReturnPiece findKing(ArrayList<ReturnPiece> piecesOnBoard, Chess.Player player) {
-	    // Find the king of the specified player
-	    ReturnPiece.PieceType kingType = (player == Chess.Player.white) ? ReturnPiece.PieceType.WK : ReturnPiece.PieceType.BK;
-
-	    for (ReturnPiece piece : piecesOnBoard) {
-	        if (piece.pieceType == kingType) {
-	            return piece;
-	        }
-	    }
-
-	    // King not found
-	    throw new RuntimeException("King not found for player: " + player);
-	    // Alternatively, return null or another special value to indicate an error
-	}
-
-	private static ReturnPiece findKing1(ArrayList<ReturnPiece> piecesOnBoard, Chess.Player player) {
-		// Find the king of the specified player
-		ReturnPiece.PieceType kingType = (player == Chess.Player.white) ? ReturnPiece.PieceType.WK : ReturnPiece.PieceType.BK;
-
-		for (ReturnPiece piece : piecesOnBoard) {
-			if (piece.pieceType == kingType) {
-				return piece;
+		// Check if the opponent's pieces can attack the king's position
+		for (ReturnPiece opponentPiece : piecesOnBoard) {
+			if (opponentPiece.pieceType != ReturnPiece.PieceType.WK && opponentPiece.pieceType != ReturnPiece.PieceType.BK
+					&& opponentPiece.pieceType != ReturnPiece.PieceType.WP && opponentPiece.pieceType != ReturnPiece.PieceType.BP // exclude pawns for simplicity
+					&& isPieceAttackingSquare(opponentPiece, king.pieceFile, king.pieceRank, piecesOnBoard)) {
+				// The king is in check
+				return true;
 			}
 		}
 
-		// King not found (this should not happen in a valid chess position)
-		return null;
+		// The king is not in check
+		return false;
 	}
-
-	private static boolean isPieceAttackingSquare(ReturnPiece piece, ReturnPiece.PieceFile file, int rank) {
-	    // Get the current position of the piece
-	    ReturnPiece.PieceFile pieceFile = piece.pieceFile;
-	    int pieceRank = piece.pieceRank;
-
-	    // Check based on the piece type
-	    switch (piece.pieceType) {
-	        case WP:
-	            // White pawn can attack diagonally forward left or right
-	            return (file == pieceFile && rank == pieceRank + 1) || // Move forward
-	                   ((file.ordinal() == pieceFile.ordinal() - 1 || file.ordinal() == pieceFile.ordinal() + 1) && rank == pieceRank + 1); // Attack diagonally
-
-	        case BP:
-	            // Black pawn can attack diagonally backward left or right
-	            return (file == pieceFile && rank == pieceRank - 1) || // Move backward
-	                   ((file.ordinal() == pieceFile.ordinal() - 1 || file.ordinal() == pieceFile.ordinal() + 1) && rank == pieceRank - 1); // Attack diagonally
-
-	        case WR:
-	        case BR:
-	            // Rook can attack in the same file or rank
-	            return file == pieceFile || rank == pieceRank;
-
-	        case WN:
-	        case BN:
-	            // Knight can attack in an L-shape (two squares in one direction and one square perpendicular)
-	            int fileDiff = Math.abs(file.ordinal() - pieceFile.ordinal());
-	            int rankDiff = Math.abs(rank - pieceRank);
-	            return (fileDiff == 2 && rankDiff == 1) || (fileDiff == 1 && rankDiff == 2);
-
-	        case WB:
-	        case BB:
-	            // Bishop can attack diagonally
-	            return Math.abs(file.ordinal() - pieceFile.ordinal()) == Math.abs(rank - pieceRank);
-
-	        case WQ:
-	        case BQ:
-	            // Queen can attack in the same file, rank, or diagonally
-	            return file == pieceFile || rank == pieceRank || Math.abs(file.ordinal() - pieceFile.ordinal()) == Math.abs(rank - pieceRank);
-
-	        case WK:
-	        case BK:
-	            // King can attack one square in any direction
-	            return Math.abs(file.ordinal() - pieceFile.ordinal()) <= 1 && Math.abs(rank - pieceRank) <= 1;
-
-	        default:
-	            return false; // Unknown piece type
-	    }
-	}
-
-
-
-	// Helper method to determine the promotion piece type based on the promotion string and pawn type
-	private static ReturnPiece.PieceType getPromotionPieceType(String promotionPiece, ReturnPiece.PieceType pawnType) {
-		switch (promotionPiece.toUpperCase().strip()) {
-		case "Q":
-			return (pawnType == ReturnPiece.PieceType.WP) ? ReturnPiece.PieceType.WQ : ReturnPiece.PieceType.BQ;
-		case "R":
-			return (pawnType == ReturnPiece.PieceType.WP) ? ReturnPiece.PieceType.WR : ReturnPiece.PieceType.BR;
-		case "N":
-			return (pawnType == ReturnPiece.PieceType.WP) ? ReturnPiece.PieceType.WN : ReturnPiece.PieceType.BN;
-		case "B":
-			return (pawnType == ReturnPiece.PieceType.WP) ? ReturnPiece.PieceType.WB : ReturnPiece.PieceType.BB;
-		default:
-			// Invalid promotion piece, default to queen
-			return (pawnType == ReturnPiece.PieceType.WP) ? ReturnPiece.PieceType.WQ : ReturnPiece.PieceType.BQ;
-		}
-	}
-	private static ReturnPiece findPieceAtSquare(ReturnPiece.PieceFile targetFile, int targetRank, ArrayList<ReturnPiece> piecesOnBoard) {
-	    // Iterate through the pieces on the board and find the piece at the specified square
-	    for (ReturnPiece piece : piecesOnBoard) {
-	        if (piece.pieceFile == targetFile && piece.pieceRank == targetRank) {
-	            return piece;
-	        }
-	    }
-
-	    // If no piece is found at the specified square, return null
-	    return null;
-	}
-	private static boolean isPieceAttackingSquare(ReturnPiece piece, ReturnPiece.PieceFile file, int rank, ArrayList<ReturnPiece> piecesOnBoard) {
-	    // Get the current position of the piece
-	    ReturnPiece.PieceFile pieceFile = piece.pieceFile;
-	    int pieceRank = piece.pieceRank;
-	    ReturnPiece destPiece = findPieceAtSquare(file, rank, piecesOnBoard);
-
-	    // Check if both pieces have the same color
-	    String pColor = (white.contains(piece.pieceType)) ? "w" : "b";
-	    String destPieceColor = (white.contains(destPiece.pieceType)) ? "w" : "b";
-	    boolean sameColor = destPiece != null && destPieceColor.equals(pColor);
-
-	    // Check based on the piece type
-	    switch (piece.pieceType) {
-	        case WP:
-	            // White pawn can attack diagonally forward left or right
-	            return !sameColor && (file == pieceFile && rank == pieceRank + 1) || // Move forward
-	                    !sameColor && ((file.ordinal() == pieceFile.ordinal() - 1 || file.ordinal() == pieceFile.ordinal() + 1) && rank == pieceRank + 1); // Attack diagonally
-
-	        case BP:
-	            // Black pawn can attack diagonally backward left or right
-	            return !sameColor && (file == pieceFile && rank == pieceRank - 1) || // Move backward
-	                    !sameColor && ((file.ordinal() == pieceFile.ordinal() - 1 || file.ordinal() == pieceFile.ordinal() + 1) && rank == pieceRank - 1); // Attack diagonally
-
-	        case WR:
-	        case BR:
-	            // Rook can attack in the same file or rank
-	            return !sameColor && file == pieceFile || !sameColor && rank == pieceRank;
-
-	        case WN:
-	        case BN:
-	            // Knight can attack in an L-shape (two squares in one direction and one square perpendicular)
-	            int fileDiff = Math.abs(file.ordinal() - pieceFile.ordinal());
-	            int rankDiff = Math.abs(rank - pieceRank);
-	            return !sameColor && (fileDiff == 2 && rankDiff == 1) || !sameColor && (fileDiff == 1 && rankDiff == 2);
-
-	        case WB:
-	        case BB:
-	            // Bishop can attack diagonally
-	            return !sameColor && Math.abs(file.ordinal() - pieceFile.ordinal()) == Math.abs(rank - pieceRank);
-
-	        case WQ:
-	        case BQ:
-	            // Queen can attack in the same file, rank, or diagonally
-	            return !sameColor && file == pieceFile || !sameColor && rank == pieceRank || !sameColor && Math.abs(file.ordinal() - pieceFile.ordinal()) == Math.abs(rank - pieceRank);
-
-	        case WK:
-	        case BK:
-	            // King can attack one square in any direction
-	            return !sameColor && Math.abs(file.ordinal() - pieceFile.ordinal()) <= 1 && Math.abs(rank - pieceRank) <= 1;
-
-	        default:
-	            return false; // Unknown piece type
-	    }
-	}
-
+	
 	public static boolean isCheckAndCheckmate(String sourceSquare, String destinationSquare, ArrayList<ReturnPiece> piecesOnBoard, Chess.Player currentPlayer) {
 	    // Find the king of the current player
 	    ReturnPiece king = findKing(piecesOnBoard, currentPlayer);
@@ -1095,6 +923,461 @@ public class MoveValidator {
 	            return false; // Unknown piece type
 	    }
 	}
+
 	
+	public static boolean isCheck_mightwork(ArrayList<ReturnPiece> piecesOnBoard, Chess.Player currentPlayer) {
+	    // Find the king of the current player
+	    ReturnPiece king = findKing(piecesOnBoard, currentPlayer);
+	    System.out.println("king in isCheck: " + king);
+	    ArrayList<ReturnPiece.PieceType> pType = (currentPlayer == Chess.Player.white) ? black : white;
+	    // Check if the opponent's pieces can attack the king's position
+	    for (ReturnPiece opponentPiece : piecesOnBoard) {
+	    	ReturnPiece.PieceType oppPieceType = opponentPiece.pieceType;
+	        if (opponentPiece.pieceType != king.pieceType && isPieceAttackingSquare(opponentPiece, king.pieceFile, king.pieceRank, piecesOnBoard)
+	        		&& pType.indexOf(oppPieceType) >= 0) {
+	            // The king is in check
+	        	System.out.println("opponent piece in isCheck: " + opponentPiece);
+	            return true;
+	        }
+
+	        // Special handling for pawns attacking diagonally
+	        if (opponentPiece.pieceType == getOpponentPawnType(currentPlayer) && isPawnAttackingSquare(opponentPiece, king.pieceFile, king.pieceRank)) {
+	            // The king is in check
+	            return true;
+	        }
+	    }
+
+	    // The king is not in check
+	    return false;
+	}
+	public static boolean isCheck(ArrayList<ReturnPiece> piecesOnBoard, Chess.Player currentPlayer) {
+	    // Find the king of the current player
+	    ReturnPiece king = findKing(piecesOnBoard, currentPlayer);
+	    System.out.println("king in isCheck: " + king);
+	    ArrayList<ReturnPiece.PieceType> pType = (currentPlayer == Chess.Player.white) ? black : white;
+
+	    // Check if the opponent's pieces can attack the king's position
+	    for (ReturnPiece opponentPiece : piecesOnBoard) {
+	        ReturnPiece.PieceType oppPieceType = opponentPiece.pieceType;
+
+	        if (opponentPiece.pieceType != king.pieceType && isPieceAttackingSquare(opponentPiece, king.pieceFile, king.pieceRank, piecesOnBoard)) {
+	            // The king is in check
+	            System.out.println("opponent piece in isCheck: " + opponentPiece);
+	            return true;
+	        }
+
+	        // Special handling for pawns attacking diagonally
+	        if (opponentPiece.pieceType == getOpponentPawnType(currentPlayer) && isPawnAttackingSquare(opponentPiece, king.pieceFile, king.pieceRank)) {
+	            // The king is in check
+	            System.out.println("Pawn attacking square: " + opponentPiece);
+	            return true;
+	        }
+	    }
+
+	    // The king is not in check
+	    return false;
+	}
+
+
+
+	private static ReturnPiece.PieceType getOpponentPawnType(Chess.Player currentPlayer) {
+	    // Determine the type of pawn for the opponent based on the current player
+	    return (currentPlayer == Chess.Player.white) ? ReturnPiece.PieceType.BP : ReturnPiece.PieceType.WP; //switched WP and BP... was originally BP WP
+	}
+
+	private static boolean isPawnAttackingSquare(ReturnPiece pawn, ReturnPiece.PieceFile targetFile, int targetRank) {
+	    // Check if the pawn is attacking the specified square diagonally
+	    int pawnRank = pawn.pieceRank;
+
+	    // Determine the direction of pawn attack based on the opponent's position
+	    int rankDifference = (pawn.pieceType == ReturnPiece.PieceType.WP) ? 1 : -1;
+
+	    // Check if the target square is diagonally forward from the pawn
+	    return targetFile == pawn.pieceFile && targetRank == pawnRank + rankDifference;
+	}
+
+	private static ReturnPiece findKing(ArrayList<ReturnPiece> piecesOnBoard, Chess.Player player) {
+	    // Find the king of the specified player
+	    ReturnPiece.PieceType kingType = (player == Chess.Player.white) ? ReturnPiece.PieceType.WK : ReturnPiece.PieceType.BK;
+
+	    for (ReturnPiece piece : piecesOnBoard) {
+	        if (piece.pieceType == kingType) {
+	            System.out.println("Found king: " + piece);
+	            return piece;
+	        }
+	    }
+
+	    // King not found
+	    throw new RuntimeException("King not found for player: " + player);
+	    // Alternatively, return null or another special value to indicate an error
+	}
+
+
+	private static ReturnPiece findKing_mightwork(ArrayList<ReturnPiece> piecesOnBoard, Chess.Player player) {
+	    // Find the king of the specified player
+	    ReturnPiece.PieceType kingType = (player == Chess.Player.white) ? ReturnPiece.PieceType.WK : ReturnPiece.PieceType.BK; // switched BK, WK... was originally WK, BK
+
+	    for (ReturnPiece piece : piecesOnBoard) {
+	        if (piece.pieceType == kingType) {
+	            return piece;
+	        }
+	    }
+
+	    // King not found
+	    throw new RuntimeException("King not found for player: " + player);
+	    // Alternatively, return null or another special value to indicate an error
+	}
+
+	private static ReturnPiece findKing1(ArrayList<ReturnPiece> piecesOnBoard, Chess.Player player) {
+		// Find the king of the specified player
+		ReturnPiece.PieceType kingType = (player == Chess.Player.white) ? ReturnPiece.PieceType.WK : ReturnPiece.PieceType.BK;
+
+		for (ReturnPiece piece : piecesOnBoard) {
+			if (piece.pieceType == kingType) {
+				return piece;
+			}
+		}
+
+		// King not found (this should not happen in a valid chess position)
+		return null;
+	}
+	
+
+	// Remaining helper methods remain unchanged
+	// ...
+
+	
+	private static boolean isPieceAttackingSquare1(ReturnPiece piece, ReturnPiece.PieceFile targetFile, int targetRank, ArrayList<ReturnPiece> piecesOnBoard) {
+	    // Check if the target square is occupied by a piece of the same color
+	    if (isSquareOccupiedBySameColor(targetFile, targetRank, piece.pieceType, piecesOnBoard)) {
+	        return false;
+	    }
+
+	    switch (piece.pieceType) {
+	        case WP:
+	        case BP:
+	            return isPawnAttackingSquare(piece, targetFile, targetRank);
+
+	        case WR:
+	        case BR:
+	            return isRookAttackingSquare(piece.pieceFile, piece.pieceRank, targetFile, targetRank, piecesOnBoard);
+
+	        case WN:
+	        case BN:
+	            return isKnightAttackingSquare(piece.pieceFile, piece.pieceRank, targetFile, targetRank);
+
+	        case WB:
+	        case BB:
+	            return isBishopAttackingSquare(piece.pieceFile, piece.pieceRank, targetFile, targetRank, piecesOnBoard);
+
+	        case WQ:
+	        case BQ:
+	            return isQueenAttackingSquare(piece.pieceFile, piece.pieceRank, targetFile, targetRank, piecesOnBoard);
+
+	        case WK:
+	        case BK:
+	            return isKingAttackingSquare(piece.pieceFile, piece.pieceRank, targetFile, targetRank);
+
+	        default:
+	            return false; // Unknown piece type
+	    }
+	}
+
+	private static boolean isPawnAttackingSquare1(ReturnPiece pawn, ReturnPiece.PieceFile targetFile, int targetRank) {
+	    // Check if the pawn is attacking the specified square diagonally
+	    int pawnRank = pawn.pieceRank;
+	    int rankDifference = (pawn.pieceType == ReturnPiece.PieceType.WP) ? 1 : -1;
+
+	    return targetFile == pawn.pieceFile && targetRank == pawnRank + rankDifference;
+	}
+
+	private static boolean isRookAttackingSquare(ReturnPiece.PieceFile startFile, int startRank, ReturnPiece.PieceFile targetFile, int targetRank, ArrayList<ReturnPiece> piecesOnBoard) {
+	    return isPathClearRook(startFile, startRank, targetFile, targetRank, piecesOnBoard);
+	}
+
+	private static boolean isKnightAttackingSquare(ReturnPiece.PieceFile startFile, int startRank, ReturnPiece.PieceFile targetFile, int targetRank) {
+	    int fileDiff = Math.abs(targetFile.ordinal() - startFile.ordinal());
+	    int rankDiff = Math.abs(targetRank - startRank);
+
+	    return (fileDiff == 2 && rankDiff == 1) || (fileDiff == 1 && rankDiff == 2);
+	}
+
+	private static boolean isBishopAttackingSquare(
+	        ReturnPiece.PieceFile startFile, int startRank,
+	        ReturnPiece.PieceFile targetFile, int targetRank,
+	        ArrayList<ReturnPiece> piecesOnBoard) {
+
+	    // Check if the path is clear (no pieces in the way)
+	    if (!isPathOccupied(startFile, startRank, targetFile, targetRank, piecesOnBoard)) {
+	        // Check if the destination square is unoccupied or has an opponent's piece
+	        ReturnPiece targetPiece = findPieceAtSquare(targetFile, targetRank, piecesOnBoard);
+	        if (targetPiece != null && !isSquareOccupiedBySameColor(targetFile, targetRank, targetPiece.pieceType, piecesOnBoard)) {
+	            return true; // Valid bishop move
+	        }
+	    }
+
+	    return false;
+	}
+
+
+
+
+	private static boolean isQueenAttackingSquare(ReturnPiece.PieceFile startFile, int startRank, ReturnPiece.PieceFile targetFile, int targetRank, ArrayList<ReturnPiece> piecesOnBoard) {
+	    return isPathClearQueen(startFile, startRank, targetFile, targetRank, piecesOnBoard);
+	}
+
+	private static boolean isKingAttackingSquare(ReturnPiece.PieceFile startFile, int startRank, ReturnPiece.PieceFile targetFile, int targetRank) {
+	    // King can attack one square in any direction
+	    int fileDiff = Math.abs(targetFile.ordinal() - startFile.ordinal());
+	    int rankDiff = Math.abs(targetRank - startRank);
+
+	    return fileDiff <= 1 && rankDiff <= 1;
+	}
+
+	private static boolean isPathClearRook(ReturnPiece.PieceFile startFile, int startRank, ReturnPiece.PieceFile targetFile, int targetRank, ArrayList<ReturnPiece> piecesOnBoard) {
+	    // Rook can attack in the same file or rank
+	    return !isPathOccupied(startFile, startRank, targetFile, targetRank, piecesOnBoard);
+	}
+
+	private static boolean isPathClearBishop(ReturnPiece.PieceFile startFile, int startRank, ReturnPiece.PieceFile targetFile, int targetRank, ArrayList<ReturnPiece> piecesOnBoard) {
+	    // Bishop can attack diagonally
+	    int fileDiff = Math.abs(targetFile.ordinal() - startFile.ordinal());
+	    int rankDiff = Math.abs(targetRank - startRank);
+
+	    // Check if the path is clear diagonally
+	    if (fileDiff == rankDiff) {
+	        return !isPathOccupied(startFile, startRank, targetFile, targetRank, piecesOnBoard);
+	    }
+
+	    return false;
+	}
+
+
+	private static boolean isPathClearQueen(ReturnPiece.PieceFile startFile, int startRank, ReturnPiece.PieceFile targetFile, int targetRank, ArrayList<ReturnPiece> piecesOnBoard) {
+	    // Queen can attack in the same file, rank, or diagonally
+	    return isPathClearRook(startFile, startRank, targetFile, targetRank, piecesOnBoard) || isPathClearBishop(startFile, startRank, targetFile, targetRank, piecesOnBoard);
+	}
+
+
+	private static boolean isPathOccupied(ReturnPiece.PieceFile startFile, int startRank, ReturnPiece.PieceFile endFile, int endRank, ArrayList<ReturnPiece> piecesOnBoard) {
+	    // Check if the path is occupied by any piece
+	    int fileStep = Integer.compare(endFile.ordinal(), startFile.ordinal());
+	    int rankStep = Integer.compare(endRank, startRank);
+
+	    ReturnPiece.PieceFile currentFile = startFile;
+	    int currentRank = startRank;
+
+	    while (currentFile != endFile || currentRank != endRank) {
+	        // Ensure indices are within bounds
+	        if (currentFile.ordinal() < 0 || currentFile.ordinal() >= ReturnPiece.PieceFile.values().length ||
+	            currentRank < 1 || currentRank > 8) {
+	            return false; // Path is clear if out of bounds
+	        }
+
+	        currentFile = ReturnPiece.PieceFile.values()[(currentFile.ordinal() + fileStep + ReturnPiece.PieceFile.values().length) % ReturnPiece.PieceFile.values().length];
+	        currentRank += rankStep;
+
+	        if (isSquareOccupied(currentFile, currentRank, piecesOnBoard)) {
+	            return true; // Path is occupied
+	        }
+	    }
+
+	    return false; // Path is clear
+	}
+
+
+	private static boolean isSquareOccupied(ReturnPiece.PieceFile file, int rank, ArrayList<ReturnPiece> piecesOnBoard) {
+	    // Check if the square is occupied by any piece
+	    for (ReturnPiece piece : piecesOnBoard) {
+	        if (piece.pieceFile == file && piece.pieceRank == rank) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+
+	private static boolean isSquareOccupiedBySameColor(
+		    ReturnPiece.PieceFile targetFile, int targetRank,
+		    ReturnPiece.PieceType pieceType, ArrayList<ReturnPiece> piecesOnBoard) {
+
+		    // Check if the target square is occupied by a piece of the same color
+		    for (ReturnPiece piece : piecesOnBoard) {
+		        if (piece.pieceFile == targetFile && piece.pieceRank == targetRank && piece.pieceType == pieceType) {
+		            return true;
+		        }
+		    }
+
+		    return false;
+		}
+
+	   
+
+
+	private static boolean isPathClearPawn(ReturnPiece.PieceFile startFile, int startRank, ReturnPiece.PieceFile targetFile, int targetRank, Chess.Player currentPlayer, ArrayList<ReturnPiece> piecesOnBoard) {
+	    // Check if the path is clear for pawn movement
+	    int direction = (currentPlayer == Chess.Player.white) ? 1 : -1;
+	    int rankDifference = targetRank - startRank;
+	    ReturnPiece.PieceFile currentFile = startFile;
+
+	    for (int i = 1; i <= Math.abs(rankDifference); i++) {
+	        currentFile = nextFile(currentFile, direction);
+	        int currentRank = startRank + direction * i;
+
+	        if (isSquareOccupied(currentFile.toString() + currentRank, piecesOnBoard)) {
+	            return false; // Path is blocked
+	        }
+	    }
+	    return true; // Path is clear
+	}
+
+	private static ReturnPiece.PieceFile nextFile(ReturnPiece.PieceFile file, int direction) {
+	    // Return the next file in the specified direction
+	    int ordinal = file.ordinal() + direction;
+	    return ReturnPiece.PieceFile.values()[Math.max(0, Math.min(ordinal, ReturnPiece.PieceFile.values().length - 1))];
+	}
+
+
+	
+
+	private static ReturnPiece.PieceFile getNextFile(ReturnPiece.PieceFile currentFile, int step) {
+	    // Helper method to get the next PieceFile
+	    int nextFileIndex = (currentFile.ordinal() + step + ReturnPiece.PieceFile.values().length) % ReturnPiece.PieceFile.values().length;
+	    return ReturnPiece.PieceFile.values()[nextFileIndex];
+	}
+
+
+
+	private static boolean isPieceAttackingSquare(ReturnPiece piece, ReturnPiece.PieceFile file, int rank, ArrayList<ReturnPiece> piecesOnBoard) {
+	    // Get the current position of the piece
+	    ReturnPiece.PieceFile pieceFile = piece.pieceFile;
+	    int pieceRank = piece.pieceRank;
+	    ReturnPiece destPiece = findPieceAtSquare(file, rank, piecesOnBoard);
+
+	    // Check if both pieces have the same color
+	    String pColor = (white.contains(piece.pieceType)) ? "w" : "b";
+	    String destPieceColor = (white.contains(destPiece.pieceType)) ? "w" : "b";
+	    boolean sameColor = destPiece != null && destPieceColor.equals(pColor);
+
+	    // Check based on the piece type
+	    switch (piece.pieceType) {
+	        case WP:
+	            // White pawn can attack diagonally forward left or right
+	            return !sameColor && (file == pieceFile && rank == pieceRank + 1) || // Move forward
+	                    !sameColor && ((file.ordinal() == pieceFile.ordinal() - 1 || file.ordinal() == pieceFile.ordinal() + 1) && rank == pieceRank + 1); // Attack diagonally
+
+	        case BP:
+	            // Black pawn can attack diagonally backward left or right
+	            return !sameColor && (file == pieceFile && rank == pieceRank - 1) || // Move backward
+	                    !sameColor && ((file.ordinal() == pieceFile.ordinal() - 1 || file.ordinal() == pieceFile.ordinal() + 1) && rank == pieceRank - 1); // Attack diagonally
+
+	        case WR:
+	        case BR:
+	            // Rook can attack in the same file or rank
+	            return !sameColor && file == pieceFile || !sameColor && rank == pieceRank;
+
+	        case WN:
+	        case BN:
+	            // Knight can attack in an L-shape (two squares in one direction and one square perpendicular)
+	            int fileDiff = Math.abs(file.ordinal() - pieceFile.ordinal());
+	            int rankDiff = Math.abs(rank - pieceRank);
+	            return !sameColor && (fileDiff == 2 && rankDiff == 1) || !sameColor && (fileDiff == 1 && rankDiff == 2);
+
+	        case WB:
+	        case BB:
+	            // Bishop can attack diagonally
+	            return !sameColor && Math.abs(file.ordinal() - pieceFile.ordinal()) == Math.abs(rank - pieceRank);
+
+	        case WQ:
+	        case BQ:
+	            // Queen can attack in the same file, rank, or diagonally
+	            return !sameColor && file == pieceFile || !sameColor && rank == pieceRank || !sameColor && Math.abs(file.ordinal() - pieceFile.ordinal()) == Math.abs(rank - pieceRank);
+
+	        case WK:
+	        case BK:
+	            // King can attack one square in any direction
+	            return !sameColor && Math.abs(file.ordinal() - pieceFile.ordinal()) <= 1 && Math.abs(rank - pieceRank) <= 1;
+
+	        default:
+	            return false; // Unknown piece type
+	    }
+	}
+	private static boolean isPieceAttackingSquare(ReturnPiece piece, ReturnPiece.PieceFile file, int rank) {
+	    // Get the current position of the piece
+	    ReturnPiece.PieceFile pieceFile = piece.pieceFile;
+	    int pieceRank = piece.pieceRank;
+
+	    // Check based on the piece type
+	    switch (piece.pieceType) {
+	        case WP:
+	            // White pawn can attack diagonally forward left or right
+	            return (file == pieceFile && rank == pieceRank + 1) || // Move forward
+	                   ((file.ordinal() == pieceFile.ordinal() - 1 || file.ordinal() == pieceFile.ordinal() + 1) && rank == pieceRank + 1); // Attack diagonally
+
+	        case BP:
+	            // Black pawn can attack diagonally backward left or right
+	            return (file == pieceFile && rank == pieceRank - 1) || // Move backward
+	                   ((file.ordinal() == pieceFile.ordinal() - 1 || file.ordinal() == pieceFile.ordinal() + 1) && rank == pieceRank - 1); // Attack diagonally
+
+	        case WR:
+	        case BR:
+	            // Rook can attack in the same file or rank
+	            return file == pieceFile || rank == pieceRank;
+
+	        case WN:
+	        case BN:
+	            // Knight can attack in an L-shape (two squares in one direction and one square perpendicular)
+	            int fileDiff = Math.abs(file.ordinal() - pieceFile.ordinal());
+	            int rankDiff = Math.abs(rank - pieceRank);
+	            return (fileDiff == 2 && rankDiff == 1) || (fileDiff == 1 && rankDiff == 2);
+
+	        case WB:
+	        case BB:
+	            // Bishop can attack diagonally
+	            return Math.abs(file.ordinal() - pieceFile.ordinal()) == Math.abs(rank - pieceRank);
+
+	        case WQ:
+	        case BQ:
+	            // Queen can attack in the same file, rank, or diagonally
+	            return file == pieceFile || rank == pieceRank || Math.abs(file.ordinal() - pieceFile.ordinal()) == Math.abs(rank - pieceRank);
+
+	        case WK:
+	        case BK:
+	            // King can attack one square in any direction
+	            return Math.abs(file.ordinal() - pieceFile.ordinal()) <= 1 && Math.abs(rank - pieceRank) <= 1;
+
+	        default:
+	            return false; // Unknown piece type
+	    }
+	}
+	private static ReturnPiece findPieceAtSquare(ReturnPiece.PieceFile targetFile, int targetRank, ArrayList<ReturnPiece> piecesOnBoard) {
+	    // Iterate through the pieces on the board and find the piece at the specified square
+	    for (ReturnPiece piece : piecesOnBoard) {
+	        if (piece.pieceFile == targetFile && piece.pieceRank == targetRank) {
+	            return piece;
+	        }
+	    }
+
+	    // If no piece is found at the specified square, return null
+	    return null;
+	}
+
+
+	// Helper method to determine the promotion piece type based on the promotion string and pawn type
+	private static ReturnPiece.PieceType getPromotionPieceType(String promotionPiece, ReturnPiece.PieceType pawnType) {
+		switch (promotionPiece.toUpperCase().strip()) {
+		case "Q":
+			return (pawnType == ReturnPiece.PieceType.WP) ? ReturnPiece.PieceType.WQ : ReturnPiece.PieceType.BQ;
+		case "R":
+			return (pawnType == ReturnPiece.PieceType.WP) ? ReturnPiece.PieceType.WR : ReturnPiece.PieceType.BR;
+		case "N":
+			return (pawnType == ReturnPiece.PieceType.WP) ? ReturnPiece.PieceType.WN : ReturnPiece.PieceType.BN;
+		case "B":
+			return (pawnType == ReturnPiece.PieceType.WP) ? ReturnPiece.PieceType.WB : ReturnPiece.PieceType.BB;
+		default:
+			// Invalid promotion piece, default to queen
+			return (pawnType == ReturnPiece.PieceType.WP) ? ReturnPiece.PieceType.WQ : ReturnPiece.PieceType.BQ;
+		}
+	}
+
 }
 
